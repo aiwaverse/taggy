@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/utils.dart';
-import 'package:myapp/page-1/tela_tags.dart';
-// import 'package:myapp/page-1/tela-arquivos.dart';
-// import 'package:myapp/page-1/tela-arquivos-do-celular.dart';
-// import 'package:myapp/page-1/tela-principal.dart';
-// import 'package:myapp/page-1/tela-resultado-busca.dart';
-// import 'package:myapp/page-1/tela-inicial.dart';
-// import 'package:myapp/page-1/tela-busca.dart';
-// import 'package:myapp/page-1/tela-detalhe-imagem.dart';
-// import 'package:myapp/page-1/popup-menu.dart';
-// import 'package:myapp/page-1/popup-arquivo.dart';
+import 'package:taggy/main_screen.dart';
+import 'package:taggy/utils.dart';
+// import 'package:taggy/page-1/tela-arquivos.dart';
+// import 'package:taggy/page-1/tela-arquivos-do-celular.dart';
+// import 'package:taggy/page-1/tela-principal.dart';
+// import 'package:taggy/page-1/tela-resultado-busca.dart';
+// import 'package:taggy/page-1/tela-inicial.dart';
+// import 'package:taggy/page-1/tela-busca.dart';
+// import 'package:taggy/page-1/tela-detalhe-imagem.dart';
+// import 'package:taggy/page-1/popup-menu.dart';
+// import 'package:taggy/page-1/popup-arquivo.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(const Taggy());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Taggy extends StatelessWidget {
+  const Taggy({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Scaffold(
-        body: SingleChildScrollView(
-          child: Scene(),
-        ),
-      ),
+      home: const MainScreen(),
     );
   }
 }
