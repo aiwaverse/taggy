@@ -71,7 +71,8 @@ class _MainScreenState extends State<MainScreen> {
                             builder: (context) => SearchScreen(
                                 avaliableTags: galleryItems
                                     .map((item) => item.tags)
-                                    .expand((x) => x))));
+                                    .expand((x) => x)
+                                    .toSet())));
                       },
                       style: ElevatedButton.styleFrom(
                         shadowColor: Colors.transparent,
