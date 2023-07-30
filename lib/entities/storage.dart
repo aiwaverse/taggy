@@ -5,12 +5,15 @@ abstract class GalleryStorage {
   Gallery getCompleteGallery();
   List<GalleryItem> search(Search options);
   List<GalleryItem> getAllItems();
+  bool hasContent();
 }
 
 class GalleryStorageMock implements GalleryStorage {
   static final Gallery _gallery = Gallery();
   @override
   Gallery getCompleteGallery() => _gallery;
+  @override
+  bool hasContent() => _gallery.hasContent;
   @override
   List<GalleryItem> search(Search options) {
     var items = _gallery.items

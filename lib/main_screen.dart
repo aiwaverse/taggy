@@ -96,9 +96,11 @@ class _MainScreenState extends State<MainScreen> {
                       },
                       child: Row(
                         children: [
-                          SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: SelectableText(
+                          Container(
+                              constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.5),
+                              child: Text(
                                 widget.searchOptions!.toString(),
                                 style: TextStyles.button.copyWith(
                                     color: AppColors.neutralDarker,
@@ -112,16 +114,17 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
       backgroundColor: AppColors.baseLight,
-      body: galleryItems.isEmpty
-          ? const Center(
+      body: galleryStorage.hasContent()
+          ? ImageGrid(
+              galleryItems: galleryItems,
+              onSearch: widget.searchOptions != null,
+            )
+          : const Center(
               child: Text(
                 "Clique no botão + para adicionar imagens e pastas a sua galeria.",
                 style: TextStyles.h1,
                 textAlign: TextAlign.center,
               ),
-            )
-          : ImageGrid(
-              galleryItems: galleryItems,
             ),
     );
   }

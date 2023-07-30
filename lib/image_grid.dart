@@ -5,8 +5,10 @@ import 'package:taggy/entities/gallery.dart';
 import 'package:taggy/image_detail.dart';
 
 class ImageGrid extends StatefulWidget {
-  const ImageGrid({super.key, required this.galleryItems});
+  const ImageGrid(
+      {super.key, required this.galleryItems, required this.onSearch});
   final List<GalleryItem> galleryItems;
+  final bool onSearch;
 
   @override
   State<StatefulWidget> createState() => _ImageGridState();
@@ -16,9 +18,13 @@ class _ImageGridState extends State<ImageGrid> {
   int page = 1;
   final int imagesPerPage = 20;
   var scrollController = ScrollController();
+
+  bool canAdvance() => widget.galleryItems.length >= (page * imagesPerPage + 1);
+  bool canGoBack() => page >= 2;
+
   void advancedPage() {
     setState(() {
-      if (widget.galleryItems.length >= (page * imagesPerPage + 1)) {
+      if (canAdvance()) {
         page++;
         scrollController.jumpTo(0);
       }
@@ -27,7 +33,7 @@ class _ImageGridState extends State<ImageGrid> {
 
   void backPage() {
     setState(() {
-      if (page >= 2) {
+      if (canGoBack()) {
         page--;
         scrollController.jumpTo(0);
       }
@@ -44,7 +50,7 @@ class _ImageGridState extends State<ImageGrid> {
     return Center(
         child: Column(
       children: [
-        foundImages > 0
+        widget.onSearch
             ? Padding(
                 padding: const EdgeInsets.all(10),
                 child: Text(
@@ -83,7 +89,7 @@ class _ImageGridState extends State<ImageGrid> {
           children: [
             IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: backPage,
+              onPressed: canGoBack() ? backPage : null,
               hoverColor: Colors.transparent,
               splashColor: Colors.transparent,
               color: AppColors.neutralDark,
@@ -95,7 +101,7 @@ class _ImageGridState extends State<ImageGrid> {
             const SizedBox(width: 8),
             IconButton(
               icon: const Icon(Icons.arrow_forward),
-              onPressed: advancedPage,
+              onPressed: canAdvance() ? advancedPage : null,
               hoverColor: Colors.transparent,
               splashColor: Colors.transparent,
               color: AppColors.neutralDark,

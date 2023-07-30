@@ -11,8 +11,8 @@ class Gallery {
   final List<GalleryItem> _items = [];
   final List<String> _folders = [];
   final List<String> _files = [];
-  bool get isEmpty {
-    return _items.isEmpty;
+  bool get hasContent {
+    return _files.isNotEmpty || _folders.isNotEmpty;
   }
 
   List<GalleryItem> get items {
