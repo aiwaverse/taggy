@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:taggy/constants/app_colors.dart';
 import 'package:taggy/constants/text_styles.dart';
 import 'package:taggy/entities/gallery.dart';
 import 'package:taggy/image_detail.dart';
 
 class ImageGrid extends StatefulWidget {
-  const ImageGrid({super.key, required this.gallery});
-  final Gallery gallery;
+  const ImageGrid({super.key, required this.galleryItems});
+  final List<GalleryItem> galleryItems;
 
   @override
   State<StatefulWidget> createState() => _ImageGridState();
@@ -17,7 +18,7 @@ class _ImageGridState extends State<ImageGrid> {
   var scrollController = ScrollController();
   void advancedPage() {
     setState(() {
-      if (widget.gallery.items.length >= (page * imagesPerPage + 1)) {
+      if (widget.galleryItems.length >= (page * imagesPerPage + 1)) {
         page++;
         scrollController.jumpTo(0);
       }
@@ -35,7 +36,7 @@ class _ImageGridState extends State<ImageGrid> {
 
   @override
   Widget build(BuildContext context) {
-    var foundImages = widget.gallery.items.length;
+    var foundImages = widget.galleryItems.length;
     var start = (page - 1) * imagesPerPage;
     var end = (start + imagesPerPage) < foundImages
         ? (start + imagesPerPage)
@@ -59,7 +60,7 @@ class _ImageGridState extends State<ImageGrid> {
                   runSpacing: 4.0,
                   runAlignment: WrapAlignment.start,
                   children: [
-                    for (var item in widget.gallery.items.sublist(start, end))
+                    for (var item in widget.galleryItems.sublist(start, end))
                       GestureDetector(
                           onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
@@ -67,7 +68,7 @@ class _ImageGridState extends State<ImageGrid> {
                                       ImageDetail(imageFile: item))),
                           child: Container(
                             height: 300,
-                            width: 300,
+                            width: 200,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                     filterQuality: FilterQuality.medium,
@@ -83,37 +84,25 @@ class _ImageGridState extends State<ImageGrid> {
             IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: backPage,
+              hoverColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              color: AppColors.neutralDark,
             ),
             const SizedBox(width: 8),
-            // TODO: Find a better way to align text with the icons
-            Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-                child: Text(page.toString(), style: TextStyles.subtitle1)),
+            Text(page.toString(),
+                style: TextStyles.subtitle1
+                    .copyWith(color: AppColors.neutralDark)),
             const SizedBox(width: 8),
             IconButton(
-                onPressed: advancedPage, icon: const Icon(Icons.arrow_forward))
+              icon: const Icon(Icons.arrow_forward),
+              onPressed: advancedPage,
+              hoverColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              color: AppColors.neutralDark,
+            )
           ],
         ))
       ],
     ));
   }
 }
-
-
-// Wrap(
-//             spacing: 8.0,
-//             runSpacing: 4.0,
-//             runAlignment: WrapAlignment.start,
-//             children: [
-//               for (var item in widget.gallery.items)
-//                 GestureDetector(
-//                   onTap: () {},
-//                   child: Container(
-//                     decoration: BoxDecoration(
-//                         image: DecorationImage(
-//                             fit: BoxFit.fitWidth,
-//                             alignment: FractionalOffset.topCenter,
-//                             image: item.image.image)),
-//                   ),
-//                 )
-//             ]),

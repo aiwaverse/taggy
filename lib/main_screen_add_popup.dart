@@ -9,7 +9,7 @@ enum AddOptions { files, folders }
 class AddPopup extends StatefulWidget {
   const AddPopup({super.key, required this.addFolder, required this.addImages});
 
-  final void Function(String) addFolder;
+  final Future<void> Function(String) addFolder;
   final void Function(List<String>) addImages;
 
   @override
@@ -41,7 +41,7 @@ class _AddPopupState extends State<AddPopup> {
             String? result = await FilePicker.platform
                 .getDirectoryPath(lockParentWindow: true);
             if (result != null) {
-              widget.addFolder(result);
+              await widget.addFolder(result);
             }
         }
       },

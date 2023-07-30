@@ -42,6 +42,13 @@ dependencies:
   quiver: ^3.2.1
   path: ^1.8.3
   intl: ^0.18.1
+  permission_handler: ^10.4.3
+  open_file: ^3.3.2
+  device_info_plus: ^9.0.2
+  share_plus: ^7.0.2
+  chips_input: ^0.1.0
+  datetime_picker_formfield_new: ^2.1.0
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:

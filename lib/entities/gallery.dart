@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:quiver/strings.dart';
 import 'package:path/path.dart';
 
@@ -19,7 +21,7 @@ class Gallery {
 
   void addFolder(String folder) {
     _folders.add(folder);
-    refresh();
+    //refresh();
   }
 
   void addFiles(Iterable<String> files) {
@@ -30,39 +32,59 @@ class Gallery {
     }
   }
 
-  void refresh() {
-    for (var folder in _folders) {
-      var dir = Directory(folder);
-      var lister = dir.list(recursive: true, followLinks: true);
-      lister.listen((entity) {
-        if (entity is File) {
-          var path = entity.path;
-          var mime = lookupMimeType(path)?.split('/').first;
-          if (mime == "image") {
-            _files.add(path);
-            _items.add(GalleryItem(path, entity.lastModifiedSync()));
+  Future<void> refresh() async {
+    if (await _getImagePermissions()) {
+      for (var folder in _folders) {
+        var dir = Directory(folder);
+        var lister = dir.listSync(recursive: true, followLinks: true);
+        for (var entity in lister) {
+          if (entity is File) {
+            var path = entity.path;
+            var mime = lookupMimeType(path)?.split('/').first;
+            if (mime == "image") {
+              _files.add(path);
+              _items.add(GalleryItem(path, entity.lastModifiedSync()));
+            }
           }
         }
-      });
+      }
     }
+  }
+
+  Future<bool> _getImagePermissions() async {
+    if (Platform.isMacOS || Platform.isLinux) {
+      return true;
+    }
+    bool requestPhotos = false;
+    if (Platform.isAndroid) {
+      var deviceInfo = DeviceInfoPlugin();
+      var androidInfo = await deviceInfo.androidInfo;
+      var sdk = androidInfo.version.sdkInt;
+      if (sdk >= 33) {
+        requestPhotos = true;
+      }
+    }
+    return requestPhotos
+        ? await Permission.photos.request().isGranted
+        : await Permission.storage.request().isGranted;
   }
 }
 
 class GalleryItem {
-  GalleryItem(this._path, this.lastModified);
+  GalleryItem(this.path, this.lastModified);
 
   Image? _image;
-  final String _path;
+  String path;
   final List<Tag> _tags = [];
   final DateTime lastModified;
 
-  String get fileName => basename(_path);
+  String get fileName => basename(path);
   List<Tag> get tags => _tags;
   Image get image {
-    _image ??= Image.file(File(_path));
+    _image ??= Image.file(File(path));
     if (_image == null) {
       throw GalleryItemErrorException(
-          "Erro ao gerar a imagem com o path $_path");
+          "Erro ao gerar a imagem com o path $path");
     }
     return _image!;
   }

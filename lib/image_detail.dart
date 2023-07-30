@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:open_file/open_file.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:taggy/constants/app_colors.dart';
 import 'package:taggy/constants/text_styles.dart';
 import 'package:taggy/entities/gallery.dart';
@@ -73,14 +75,19 @@ class _ImageDetailState extends State<ImageDetail> {
                         ])),
                     Row(children: [
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Share.shareXFiles([XFile(widget.imageFile.path)]);
+                          },
                           tooltip: "Compartilhar",
                           icon: const Icon(
                             Icons.share,
                             color: AppColors.neutralDark,
                           )),
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            await OpenFile.open(widget.imageFile.path);
+                          },
+                          tooltip: "Abrir externamente",
                           icon: const Icon(Icons.open_in_new,
                               color: AppColors.neutralDark))
                     ])
@@ -94,7 +101,7 @@ class _ImageDetailState extends State<ImageDetail> {
                 color: AppColors.primaryMedium,
               ))),
           Padding(
-              padding: const EdgeInsets.only(left: 16),
+              padding: const EdgeInsets.only(left: 16, bottom: 16),
               child: Align(
                   alignment: Alignment.centerLeft,
                   child: SizedBox(
@@ -155,7 +162,8 @@ class _ImageDetailState extends State<ImageDetail> {
           ...widget.imageFile.tags.map((tag) => Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                   child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       decoration: BoxDecoration(
