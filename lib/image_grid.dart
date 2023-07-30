@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taggy/constants/text_styles.dart';
 import 'package:taggy/entities/gallery.dart';
+import 'package:taggy/image_detail.dart';
 
 class ImageGrid extends StatefulWidget {
   const ImageGrid({super.key, required this.gallery});
@@ -59,13 +60,20 @@ class _ImageGridState extends State<ImageGrid> {
                   runAlignment: WrapAlignment.start,
                   children: [
                     for (var item in widget.gallery.items.sublist(start, end))
-                      Container(
-                        height: 300,
-                        width: 300,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover, image: item.image.image)),
-                      )
+                      GestureDetector(
+                          onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ImageDetail(imageFile: item))),
+                          child: Container(
+                            height: 300,
+                            width: 300,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    filterQuality: FilterQuality.medium,
+                                    fit: BoxFit.cover,
+                                    image: item.image.image)),
+                          ))
                   ],
                 ))),
         Center(

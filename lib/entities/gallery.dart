@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
 import 'package:quiver/strings.dart';
+import 'package:path/path.dart';
 
 class Gallery {
   final List<GalleryItem> _items = [];
@@ -24,7 +25,8 @@ class Gallery {
   void addFiles(Iterable<String> files) {
     _files.addAll(files);
     for (var element in files) {
-      _items.add(GalleryItem(element));
+      var file = File(element);
+      _items.add(GalleryItem(element, file.lastModifiedSync()));
     }
   }
 
@@ -38,7 +40,7 @@ class Gallery {
           var mime = lookupMimeType(path)?.split('/').first;
           if (mime == "image") {
             _files.add(path);
-            _items.add(GalleryItem(path));
+            _items.add(GalleryItem(path, entity.lastModifiedSync()));
           }
         }
       });
@@ -47,13 +49,15 @@ class Gallery {
 }
 
 class GalleryItem {
-  GalleryItem(this._path);
+  GalleryItem(this._path, this.lastModified);
 
   Image? _image;
   final String _path;
   final List<Tag> _tags = [];
+  final DateTime lastModified;
 
-  Iterable<Tag> get tags => _tags;
+  String get fileName => basename(_path);
+  List<Tag> get tags => _tags;
   Image get image {
     _image ??= Image.file(File(_path));
     if (_image == null) {
@@ -65,7 +69,8 @@ class GalleryItem {
 }
 
 class Tag {
-  String value = "";
+  Tag(this.value);
+  String value;
 
   @override
   bool operator ==(other) =>

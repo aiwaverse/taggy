@@ -60,6 +60,7 @@ class _MainScreenState extends State<MainScreen> {
               child: Text(
                 "Clique no botão + para adicionar imagens e pastas a sua galeria.",
                 style: TextStyles.h1,
+                textAlign: TextAlign.center,
               ),
             )
           : ImageGrid(
