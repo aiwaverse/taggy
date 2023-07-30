@@ -64,21 +64,50 @@ class _MainScreenState extends State<MainScreen> {
         actions: <Widget>[
           Padding(
               padding: const EdgeInsets.all(6),
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => SearchScreen(
-                            avaliableTags: galleryItems
-                                .map((item) => item.tags)
-                                .expand((x) => x))));
-                  },
-                  style: ElevatedButton.styleFrom(
-                      shadowColor: Colors.transparent,
-                      backgroundColor: AppColors.primaryPure,
-                      shape: const CircleBorder(),
-                      fixedSize: const Size(48, 48)),
-                  child: const Icon(Icons.search,
-                      color: AppColors.neutralDarker, size: 24))),
+              child: widget.searchOptions == null
+                  ? ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SearchScreen(
+                                avaliableTags: galleryItems
+                                    .map((item) => item.tags)
+                                    .expand((x) => x))));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shadowColor: Colors.transparent,
+                        backgroundColor: AppColors.primaryPure,
+                        shape: const CircleBorder(),
+                      ),
+                      child: const Icon(Icons.search,
+                          color: AppColors.neutralDarker, size: 24))
+                  : ElevatedButton(
+                      style: ButtonStyle(
+                          shadowColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                          backgroundColor:
+                              MaterialStateProperty.all(AppColors.primaryPure),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(26)))),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Row(
+                        children: [
+                          SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: SelectableText(
+                                widget.searchOptions!.toString(),
+                                style: TextStyles.button.copyWith(
+                                    color: AppColors.neutralDarker,
+                                    overflow: TextOverflow.ellipsis),
+                              )),
+                          const Icon(Icons.search,
+                              color: AppColors.neutralDarker, size: 24)
+                        ],
+                      ))),
           const Padding(padding: EdgeInsets.all(6), child: MainScreenPopup())
         ],
       ),

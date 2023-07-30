@@ -93,7 +93,8 @@ class GalleryItem {
 class Tag {
   Tag(this.value);
   String value;
-
+  @override
+  String toString() => value;
   @override
   bool operator ==(other) =>
       other is Tag && equalsIgnoreCase(value, other.value);

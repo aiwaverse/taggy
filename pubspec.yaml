@@ -76,58 +76,27 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
-  assets:
-    - assets/page-1/images/group-12.png
-    - assets/page-1/images/ic-baseline-more-vert.png
-    - assets/page-1/images/group-13.png
-    - assets/page-1/images/folder.png
-    - assets/page-1/images/mdi-pencil.png
-    - assets/page-1/images/auto-group-mzxm.png
-    - assets/page-1/images/group-13-fD1.png
-    - assets/page-1/images/ic-baseline-close.png
-    - assets/page-1/images/ic-baseline-more-vert-HWF.png
-    - assets/page-1/images/bi-clock.png
-    - assets/page-1/images/ic-baseline-search.png
-    - assets/page-1/images/ic-baseline-close-o7V.png
-    - assets/page-1/images/ic-baseline-arrow-back-ios-new.png
-    - assets/page-1/images/ic-baseline-more-vert-5EF.png
-    - assets/page-1/images/mdi-pencil-Nhm.png
-    - assets/page-1/images/auto-group-fwtt.png
-    - assets/page-1/images/vector.png
-    - assets/page-1/images/ic-baseline-image.png
-    - assets/page-1/images/group-12-njZ.png
-    - assets/page-1/images/auto-group-rflk.png
-    - assets/page-1/images/vector-U95.png
-    - assets/page-1/images/ic-baseline-search-psh.png
-    - assets/page-1/images/ic-baseline-image-QDM.png
-    - assets/page-1/images/ic-baseline-close-WJK.png
-    - assets/page-1/images/fe-bar.png
-    - assets/page-1/images/forest-background.png
-    - assets/page-1/images/forest-background-T4s.png
-    - assets/page-1/images/ic-baseline-close-Mrw.png
-    - assets/page-1/images/forest-background-Ne3.png
-    - assets/page-1/images/group-12-9V1.png
-    - assets/page-1/images/auto-group-rnhv.png
-    - assets/page-1/images/forest-background-52F.png
-    - assets/page-1/images/ic-round-open-in-new.png
-    - assets/page-1/images/auto-group-gsy5.png
-    - assets/page-1/images/auto-group-wu6f.png
-    - assets/page-1/images/folder-Nu5.png
-    - assets/page-1/images/ic-round-date-range.png
-    - assets/page-1/images/auto-group-srxh.png
-    - assets/page-1/images/beach-background.png
-    - assets/page-1/images/auto-group-41qb.png
-    - assets/page-1/images/ic-round-date-range-GQw.png
-    - assets/page-1/images/ic-baseline-plus.png
-    - assets/page-1/images/ic-baseline-plus-y5Z.png
-    - assets/page-1/images/group-13-7xK.png
-    - assets/page-1/images/auto-group-qz7y.png
-    - assets/page-1/images/uiw-menu.png
-    - assets/page-1/images/ic-baseline-tag.png
-    - assets/page-1/images/ic-baseline-share.png
-    - assets/page-1/images/auto-group-r96o.png
-    - assets/page-1/images/auto-group-mfod.png
-    - assets/page-1/images/beach-background-FRR.png
+  # assets:
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/icon.png"
+  remove_alpha_ios: true
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#FFFFFF"
+  windows:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/icon/icon.png"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:taggy/entities/gallery.dart';
 
 class Search {
@@ -10,4 +11,29 @@ class Search {
   List<Tag> withoutTags = [];
   DateTime? since;
   DateTime? until;
+
+  @override
+  String toString() {
+    var withTagsString = withTags.map((e) => e.toString()).join("+");
+    var withoutTagsString = withoutTags.map((e) => e.toString()).join("+");
+    var sinceString =
+        since != null ? DateFormat("dd/MM/yyyy").format(since!) : "";
+    var untilString =
+        until != null ? DateFormat("dd/MM/yyyy").format(until!) : "";
+
+    var searchString = "";
+    if (withTagsString.isNotEmpty) {
+      searchString += "($withTagsString)";
+    }
+    if (withoutTagsString.isNotEmpty) {
+      searchString += "-($withoutTagsString)";
+    }
+    if (sinceString.isNotEmpty) {
+      searchString += " desde:$sinceString";
+    }
+    if (untilString.isNotEmpty) {
+      searchString += " ate:$sinceString";
+    }
+    return searchString;
+  }
 }
