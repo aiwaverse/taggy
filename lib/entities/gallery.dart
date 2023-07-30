@@ -12,7 +12,7 @@ class Gallery {
     return _items.isEmpty;
   }
 
-  Iterable<GalleryItem> get items {
+  List<GalleryItem> get items {
     return _items;
   }
 
