@@ -64,7 +64,8 @@ class _MainScreenState extends State<MainScreen> {
         actions: <Widget>[
           Padding(
               padding: const EdgeInsets.all(6),
-              child: widget.searchOptions == null
+              child: widget.searchOptions == null ||
+                      widget.searchOptions.toString().isEmpty
                   ? ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
