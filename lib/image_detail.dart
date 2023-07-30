@@ -16,6 +16,7 @@ class ImageDetail extends StatefulWidget {
 class _ImageDetailState extends State<ImageDetail> {
   void addTag(String newTag) {
     setState(() {
+      newTag = newTag.trim();
       if (!widget.imageFile.tags.contains(Tag(newTag))) {
         widget.imageFile.tags.add(Tag(newTag));
       }
