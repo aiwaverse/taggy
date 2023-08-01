@@ -43,7 +43,7 @@ class Gallery {
             var mime = lookupMimeType(path)?.split('/').first;
             if (mime == "image") {
               _files.add(path);
-              _items.add(GalleryItem(path, entity.lastModifiedSync()));
+              _items.add(GalleryItem(path, entity.statSync().changed));
             }
           }
         }

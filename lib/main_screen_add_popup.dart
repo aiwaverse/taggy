@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:taggy/constants/text_styles.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'constants/app_colors.dart';
 
@@ -22,7 +23,7 @@ class _AddPopupState extends State<AddPopup> {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<AddOptions>(
-      tooltip: "Adicionar",
+      tooltip: AppLocalizations.of(context)!.add,
       initialValue: selectedScreen,
       offset: const Offset(0, 40),
       onSelected: (AddOptions option) async {
@@ -46,36 +47,38 @@ class _AddPopupState extends State<AddPopup> {
         }
       },
       itemBuilder: ((context) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: AddOptions.files,
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.image,
                     color: AppColors.neutralDarker,
                     size: 24,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
-                    "Imagens",
-                    style: TextStyles.body1,
+                    AppLocalizations.of(context)!.images,
+                    style: TextStyles.body1
+                        .copyWith(color: AppColors.neutralDarker),
                   )
                 ],
               ),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: AddOptions.folders,
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.folder,
                     color: AppColors.neutralDarker,
                     size: 24,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
-                    "Pastas",
-                    style: TextStyles.body1,
+                    AppLocalizations.of(context)!.folders,
+                    style: TextStyles.body1
+                        .copyWith(color: AppColors.neutralDarker),
                   )
                 ],
               ),

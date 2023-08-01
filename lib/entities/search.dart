@@ -17,9 +17,9 @@ class Search {
     var withTagsString = withTags.map((e) => e.toString()).join("+");
     var withoutTagsString = withoutTags.map((e) => e.toString()).join("+");
     var sinceString =
-        since != null ? DateFormat("dd/MM/yyyy").format(since!) : "";
+        since != null ? DateFormat("yyyy-MM-dd").format(since!) : "";
     var untilString =
-        until != null ? DateFormat("dd/MM/yyyy").format(until!) : "";
+        until != null ? DateFormat("yyyy-MM-dd").format(until!) : "";
 
     var searchString = "";
     if (withTagsString.isNotEmpty) {

@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:taggy/constants/app_colors.dart';
 import 'package:taggy/constants/text_styles.dart';
 import 'package:taggy/entities/gallery.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ImageDetail extends StatefulWidget {
   const ImageDetail({super.key, required this.imageFile});
@@ -69,7 +70,7 @@ class _ImageDetailState extends State<ImageDetail> {
                             height: 8,
                           ),
                           Text(
-                            "Data: ${DateFormat("dd/MM/yyyy").format(widget.imageFile.lastModified)}",
+                            "${AppLocalizations.of(context)!.date}: ${DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(widget.imageFile.lastModified)}",
                             style: TextStyles.subtitle1
                                 .copyWith(color: AppColors.neutralDark),
                           )
@@ -79,7 +80,7 @@ class _ImageDetailState extends State<ImageDetail> {
                           onPressed: () {
                             Share.shareXFiles([XFile(widget.imageFile.path)]);
                           },
-                          tooltip: "Compartilhar",
+                          tooltip: AppLocalizations.of(context)!.share,
                           icon: const Icon(
                             Icons.share,
                             color: AppColors.neutralDark,
@@ -88,7 +89,7 @@ class _ImageDetailState extends State<ImageDetail> {
                           onPressed: () async {
                             await OpenFile.open(widget.imageFile.path);
                           },
-                          tooltip: "Abrir externamente",
+                          tooltip: AppLocalizations.of(context)!.openExternally,
                           icon: const Icon(Icons.open_in_new,
                               color: AppColors.neutralDark))
                     ])
@@ -115,7 +116,8 @@ class _ImageDetailState extends State<ImageDetail> {
                                 builder: (context) {
                                   String? content;
                                   return AlertDialog(
-                                    title: const Text("Adicionar tag"),
+                                    title: Text(
+                                        AppLocalizations.of(context)!.addTag),
                                     content: TextField(
                                       textInputAction: TextInputAction.done,
                                       onChanged: (value) => content = value,
@@ -130,7 +132,9 @@ class _ImageDetailState extends State<ImageDetail> {
                                       OutlinedButton(
                                           onPressed: () =>
                                               Navigator.pop(context),
-                                          child: Text("Cancelar",
+                                          child: Text(
+                                              AppLocalizations.of(context)!
+                                                  .cancel,
                                               style: TextStyles.button.copyWith(
                                                   color:
                                                       AppColors.neutralDark))),
@@ -141,8 +145,8 @@ class _ImageDetailState extends State<ImageDetail> {
                                             }
                                             Navigator.pop(context);
                                           },
-                                          child: const Text(
-                                            "Ok",
+                                          child: Text(
+                                            AppLocalizations.of(context)!.ok,
                                             style: TextStyles.button,
                                           ))
                                     ],
@@ -157,7 +161,10 @@ class _ImageDetailState extends State<ImageDetail> {
                                   RoundedRectangleBorder(
                                       borderRadius:
                                           BorderRadius.circular(26)))),
-                          child: Text("ADICIONAR TAG",
+                          child: Text(
+                              AppLocalizations.of(context)!
+                                  .addTag
+                                  .toUpperCase(),
                               style: TextStyles.button.copyWith(
                                   color: AppColors.neutralDarker)))))),
           ...widget.imageFile.tags.map((tag) => Align(

@@ -3,6 +3,7 @@ import 'package:taggy/constants/app_colors.dart';
 import 'package:taggy/constants/text_styles.dart';
 import 'package:taggy/entities/gallery.dart';
 import 'package:taggy/image_detail.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ImageGrid extends StatefulWidget {
   const ImageGrid(
@@ -54,8 +55,9 @@ class _ImageGridState extends State<ImageGrid> {
             ? Padding(
                 padding: const EdgeInsets.all(10),
                 child: Text(
-                  "Total de imagens encontradas: $foundImages",
-                  style: TextStyles.subtitle1,
+                  "${AppLocalizations.of(context)!.imagesFound}: $foundImages",
+                  style: TextStyles.subtitle1
+                      .copyWith(color: AppColors.neutralDarker),
                 ))
             : const SizedBox.shrink(),
         Expanded(

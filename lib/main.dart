@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:taggy/main_screen.dart';
 import 'package:taggy/utils.dart';
-// import 'package:taggy/page-1/tela-arquivos.dart';
-// import 'package:taggy/page-1/tela-arquivos-do-celular.dart';
-// import 'package:taggy/page-1/tela-principal.dart';
-// import 'package:taggy/page-1/tela-resultado-busca.dart';
-// import 'package:taggy/page-1/tela-inicial.dart';
-// import 'package:taggy/page-1/tela-busca.dart';
-// import 'package:taggy/page-1/tela-detalhe-imagem.dart';
-// import 'package:taggy/page-1/popup-menu.dart';
-// import 'package:taggy/page-1/popup-arquivo.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() => runApp(const Taggy());
 
@@ -19,9 +12,16 @@ class Taggy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter',
+      title: 'Taggy',
       debugShowCheckedModeBanner: false,
       scrollBehavior: MyCustomScrollBehavior(),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

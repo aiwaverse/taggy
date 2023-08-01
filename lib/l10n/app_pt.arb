@@ -1,0 +1,22 @@
+{
+    "addToGalleryMessage" : "Use o botão + para adicionar images e pastas a sua galeria.",
+    "imagesFound" : "Número de imagens encontradas:",
+    "add" : "Adicionar",
+    "images": "Imagens",
+    "folders": "Pastas",
+    "moreOptions": "Mais opções",
+    "files": "Arquivos",
+    "tags" : "Tags",
+    "share": "Compartilhar",
+    "openExternally" : "Abrir externamente",
+    "addTag" : "Adicionar tag",
+    "cancel" : "Cancelar",
+    "date": "Data",
+    "search" : "Buscar",
+    "withTags" : "Contendo as tags:",
+    "withoutTags" : "Não contendo as tags:",
+    "dateRange" : "Período:",
+    "since" : "A partir de:",
+    "until" : "Até:",
+    "ok" : "Ok"
+}

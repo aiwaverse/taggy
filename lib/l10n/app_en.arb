@@ -1,0 +1,22 @@
+{
+    "addToGalleryMessage" : "Press the + button to add images and files to your gallery.",
+    "imagesFound" : "Number of images found:",
+    "add" : "Add",
+    "images": "Images",
+    "folders": "Folders",
+    "moreOptions": "More options",
+    "files": "Files",
+    "tags" : "Tags",
+    "share": "Share",
+    "openExternally" : "Open externally",
+    "addTag" : "Add tag",
+    "cancel" : "Cancel",
+    "date": "Date",
+    "search" : "Search",
+    "withTags" : "With all the tags:",
+    "withoutTags" : "Without any of the tags:",
+    "dateRange" : "Date range:",
+    "since" : "Since:",
+    "until" : "Until:",
+    "ok" : "Ok"
+}

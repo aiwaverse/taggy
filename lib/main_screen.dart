@@ -8,6 +8,8 @@ import 'package:taggy/entities/storage.dart';
 import 'package:taggy/main_screen_add_popup.dart';
 import 'package:taggy/search_screen.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'image_grid.dart';
 import 'main_screen_popup.dart';
 
@@ -66,22 +68,24 @@ class _MainScreenState extends State<MainScreen> {
               padding: const EdgeInsets.all(6),
               child: widget.searchOptions == null ||
                       widget.searchOptions.toString().isEmpty
-                  ? ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => SearchScreen(
-                                avaliableTags: galleryItems
-                                    .map((item) => item.tags)
-                                    .expand((x) => x)
-                                    .toSet())));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shadowColor: Colors.transparent,
-                        backgroundColor: AppColors.primaryPure,
-                        shape: const CircleBorder(),
-                      ),
-                      child: const Icon(Icons.search,
-                          color: AppColors.neutralDarker, size: 24))
+                  ? Tooltip(
+                      message: AppLocalizations.of(context)!.search,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => SearchScreen(
+                                    avaliableTags: galleryItems
+                                        .map((item) => item.tags)
+                                        .expand((x) => x)
+                                        .toSet())));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shadowColor: Colors.transparent,
+                            backgroundColor: AppColors.primaryPure,
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Icon(Icons.search,
+                              color: AppColors.neutralDarker, size: 24)))
                   : ElevatedButton(
                       style: ButtonStyle(
                           shadowColor:
@@ -121,10 +125,10 @@ class _MainScreenState extends State<MainScreen> {
               galleryItems: galleryItems,
               onSearch: widget.searchOptions != null,
             )
-          : const Center(
+          : Center(
               child: Text(
-                "Clique no botão + para adicionar imagens e pastas a sua galeria.",
-                style: TextStyles.h1,
+                AppLocalizations.of(context)!.addToGalleryMessage,
+                style: TextStyles.h1.copyWith(color: AppColors.neutralDarker),
                 textAlign: TextAlign.center,
               ),
             ),

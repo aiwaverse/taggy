@@ -7,6 +7,7 @@ import 'package:taggy/constants/text_styles.dart';
 import 'package:taggy/entities/gallery.dart';
 import 'package:taggy/entities/search.dart';
 import 'package:taggy/main_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, required this.avaliableTags});
@@ -28,7 +29,7 @@ class _SearchScreenState extends State<SearchScreen> {
           foregroundColor: AppColors.neutralDark,
           iconTheme: const IconThemeData(color: AppColors.neutralDarker),
           title: Text(
-            "Busca",
+            AppLocalizations.of(context)!.search,
             style: TextStyles.h2.copyWith(color: AppColors.neutralDarker),
           ),
           actions: [
@@ -51,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ));
                     },
                     child: Text(
-                      "BUSCAR",
+                      AppLocalizations.of(context)!.search.toUpperCase(),
                       style: TextStyles.button
                           .copyWith(color: AppColors.neutralDarker),
                     )))
@@ -59,7 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         body: ListView(padding: const EdgeInsets.all(11), children: [
           Text(
-            "Contendo as tags:",
+            AppLocalizations.of(context)!.withTags,
             style: TextStyles.h3.copyWith(color: AppColors.neutralDark),
           ),
           Align(
@@ -102,7 +103,7 @@ class _SearchScreenState extends State<SearchScreen> {
               )),
           const SizedBox(height: 20),
           Text(
-            "Não Contendo as tags:",
+            AppLocalizations.of(context)!.withoutTags,
             style: TextStyles.h3.copyWith(color: AppColors.neutralDark),
           ),
           ChipsInput(
@@ -148,7 +149,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 color: AppColors.primaryMedium,
               ))),
           Text(
-            "Período:",
+            AppLocalizations.of(context)!.dateRange,
             style: TextStyles.h3.copyWith(color: AppColors.neutralDarker),
           ),
           const SizedBox(height: 15),
@@ -156,7 +157,7 @@ class _SearchScreenState extends State<SearchScreen> {
               alignment: Alignment.centerLeft,
               child: Row(
                 children: [
-                  Text("A partir de:",
+                  Text(AppLocalizations.of(context)!.since,
                       style: TextStyles.h4
                           .copyWith(color: AppColors.neutralDarker)),
                   const SizedBox(width: 20),
@@ -181,7 +182,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             contentPadding: EdgeInsets.all(10)),
                         style: TextStyles.subtitle1
                             .copyWith(color: AppColors.neutralDark),
-                        format: DateFormat("dd/MM/yyyy"),
+                        format: DateFormat.yMMMd(
+                            Localizations.localeOf(context).toString()),
                         onShowPicker: (context, currentValue) {
                           return showDatePicker(
                               firstDate: DateTime.fromMillisecondsSinceEpoch(0,
@@ -198,7 +200,7 @@ class _SearchScreenState extends State<SearchScreen> {
               alignment: Alignment.centerLeft,
               child: Row(
                 children: [
-                  Text("Até:",
+                  Text(AppLocalizations.of(context)!.until,
                       style: TextStyles.h4
                           .copyWith(color: AppColors.neutralDarker)),
                   const SizedBox(width: 95),
@@ -223,7 +225,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             contentPadding: EdgeInsets.all(10)),
                         style: TextStyles.subtitle1
                             .copyWith(color: AppColors.neutralDark),
-                        format: DateFormat("dd/MM/yyyy"),
+                        format: DateFormat.yMMMd(
+                            Localizations.localeOf(context).toString()),
                         onShowPicker: (context, currentValue) {
                           return showDatePicker(
                               firstDate: DateTime.fromMillisecondsSinceEpoch(0,

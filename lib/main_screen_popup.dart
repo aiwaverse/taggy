@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taggy/constants/text_styles.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'constants/app_colors.dart';
 
@@ -18,41 +19,43 @@ class _MainScreenPopupState extends State<MainScreenPopup> {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<MenuScreen>(
-      tooltip: "Mais opções",
+      tooltip: AppLocalizations.of(context)!.moreOptions,
       initialValue: selectedScreen,
       offset: const Offset(0, 40),
       onSelected: (MenuScreen screen) {},
       itemBuilder: ((context) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: MenuScreen.files,
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.folder,
                     color: AppColors.neutralDarker,
                     size: 24,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
-                    "Arquivos",
-                    style: TextStyles.body1,
+                    AppLocalizations.of(context)!.files,
+                    style: TextStyles.body1
+                        .copyWith(color: AppColors.neutralDarker),
                   )
                 ],
               ),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: MenuScreen.files,
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.tag,
                     color: AppColors.neutralDarker,
                     size: 24,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
-                    "Tags",
-                    style: TextStyles.body1,
+                    AppLocalizations.of(context)!.tags,
+                    style: TextStyles.body1
+                        .copyWith(color: AppColors.neutralDarker),
                   )
                 ],
               ),
@@ -63,7 +66,8 @@ class _MainScreenPopupState extends State<MainScreenPopup> {
             shape: BoxShape.circle, color: AppColors.primaryPure),
         child: const Padding(
           padding: EdgeInsets.all(11.0),
-          child: Icon(Icons.more_vert, size: 24.0),
+          child:
+              Icon(Icons.more_vert, size: 24.0, color: AppColors.neutralDarker),
         ),
       ),
     );
