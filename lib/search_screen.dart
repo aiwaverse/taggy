@@ -153,91 +153,88 @@ class _SearchScreenState extends State<SearchScreen> {
             style: TextStyles.h3.copyWith(color: AppColors.neutralDarker),
           ),
           const SizedBox(height: 15),
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Row(
-                children: [
-                  Text(AppLocalizations.of(context)!.since,
+          GridView.count(
+            crossAxisCount: 2,
+            //physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            children: [
+              Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(AppLocalizations.of(context)!.since,
                       style: TextStyles.h4
-                          .copyWith(color: AppColors.neutralDarker)),
-                  const SizedBox(width: 20),
-                  Flexible(
-                      fit: FlexFit.tight,
-                      child: DateTimeField(
-                        onChanged: (value) {
-                          since = value;
-                        },
-                        textAlign: TextAlign.start,
-                        decoration: const InputDecoration(
-                            fillColor: AppColors.baseMedium,
-                            filled: true,
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            suffixIcon: Icon(
-                              Icons.date_range,
-                              color: AppColors.neutralDark,
-                            ),
-                            contentPadding: EdgeInsets.all(10)),
-                        style: TextStyles.subtitle1
-                            .copyWith(color: AppColors.neutralDark),
-                        format: DateFormat.yMMMd(
-                            Localizations.localeOf(context).toString()),
-                        onShowPicker: (context, currentValue) {
-                          return showDatePicker(
-                              firstDate: DateTime.fromMillisecondsSinceEpoch(0,
-                                  isUtc: true),
-                              lastDate: DateTime(DateTime.now().year + 100),
-                              context: context,
-                              initialDate: currentValue ?? DateTime.now());
-                        },
-                      ))
-                ],
-              )),
-          const SizedBox(height: 15),
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Row(
-                children: [
-                  Text(AppLocalizations.of(context)!.until,
-                      style: TextStyles.h4
-                          .copyWith(color: AppColors.neutralDarker)),
-                  const SizedBox(width: 95),
-                  Flexible(
-                      fit: FlexFit.tight,
-                      child: DateTimeField(
-                        onChanged: (value) {
-                          until = value;
-                        },
-                        textAlign: TextAlign.start,
-                        decoration: const InputDecoration(
-                            fillColor: AppColors.baseMedium,
-                            filled: true,
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            suffixIcon: Icon(
-                              Icons.date_range,
-                              color: AppColors.neutralDark,
-                            ),
-                            contentPadding: EdgeInsets.all(10)),
-                        style: TextStyles.subtitle1
-                            .copyWith(color: AppColors.neutralDark),
-                        format: DateFormat.yMMMd(
-                            Localizations.localeOf(context).toString()),
-                        onShowPicker: (context, currentValue) {
-                          return showDatePicker(
-                              firstDate: DateTime.fromMillisecondsSinceEpoch(0,
-                                  isUtc: true),
-                              lastDate: DateTime(DateTime.now().year + 100),
-                              context: context,
-                              initialDate: currentValue ?? DateTime.now());
-                        },
-                      ))
-                ],
-              ))
+                          .copyWith(color: AppColors.neutralDarker))),
+              Align(
+                  alignment: Alignment.topRight,
+                  child: DateTimeField(
+                    onChanged: (value) {
+                      since = value;
+                    },
+                    textAlign: TextAlign.start,
+                    decoration: const InputDecoration(
+                        fillColor: AppColors.baseMedium,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        suffixIcon: Icon(
+                          Icons.date_range,
+                          color: AppColors.neutralDark,
+                        ),
+                        contentPadding: EdgeInsets.all(10)),
+                    style: TextStyles.subtitle1
+                        .copyWith(color: AppColors.neutralDark),
+                    format: DateFormat.yMMMd(
+                        Localizations.localeOf(context).toString()),
+                    onShowPicker: (context, currentValue) {
+                      return showDatePicker(
+                          firstDate: DateTime.fromMillisecondsSinceEpoch(0,
+                              isUtc: true),
+                          lastDate: DateTime(DateTime.now().year + 100),
+                          context: context,
+                          initialDate: currentValue ?? DateTime.now());
+                    },
+                  )),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Text(AppLocalizations.of(context)!.until,
+                    style:
+                        TextStyles.h4.copyWith(color: AppColors.neutralDarker)),
+              ),
+              Align(
+                  alignment: Alignment.topRight,
+                  child: DateTimeField(
+                    onChanged: (value) {
+                      until = value;
+                    },
+                    textAlign: TextAlign.start,
+                    decoration: const InputDecoration(
+                        fillColor: AppColors.baseMedium,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        suffixIcon: Icon(
+                          Icons.date_range,
+                          color: AppColors.neutralDark,
+                        ),
+                        contentPadding: EdgeInsets.all(10)),
+                    style: TextStyles.subtitle1
+                        .copyWith(color: AppColors.neutralDark),
+                    format: DateFormat.yMMMd(
+                        Localizations.localeOf(context).toString()),
+                    onShowPicker: (context, currentValue) {
+                      return showDatePicker(
+                          firstDate: DateTime.fromMillisecondsSinceEpoch(0,
+                              isUtc: true),
+                          lastDate: DateTime(DateTime.now().year + 100),
+                          context: context,
+                          initialDate: currentValue ?? DateTime.now());
+                    },
+                  )),
+            ],
+          )
         ]));
   }
 }
