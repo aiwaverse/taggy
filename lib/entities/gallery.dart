@@ -28,7 +28,7 @@ class Gallery {
     _files.addAll(files);
     for (var element in files) {
       var file = File(element);
-      _items.add(GalleryItem(element, file.lastModifiedSync()));
+      _items.add(GalleryItem(element, file.statSync().modified));
     }
   }
 

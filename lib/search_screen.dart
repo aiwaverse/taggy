@@ -21,6 +21,8 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Tag> withoutTags = [];
   DateTime? since;
   DateTime? until;
+  TextEditingController dateUntilTextController = TextEditingController();
+  TextEditingController dateSinceTextController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,86 +155,126 @@ class _SearchScreenState extends State<SearchScreen> {
             style: TextStyles.h3.copyWith(color: AppColors.neutralDarker),
           ),
           const SizedBox(height: 15),
-          GridView.count(
-            crossAxisCount: 2,
-            //physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
+          Table(
+            columnWidths: const <int, TableColumnWidth>{
+              0: FractionColumnWidth(0.3),
+              1: FractionColumnWidth(0.7)
+            },
             children: [
-              Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(AppLocalizations.of(context)!.since,
-                      style: TextStyles.h4
-                          .copyWith(color: AppColors.neutralDarker))),
-              Align(
-                  alignment: Alignment.topRight,
-                  child: DateTimeField(
-                    onChanged: (value) {
-                      since = value;
-                    },
-                    textAlign: TextAlign.start,
-                    decoration: const InputDecoration(
-                        fillColor: AppColors.baseMedium,
-                        filled: true,
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        suffixIcon: Icon(
-                          Icons.date_range,
-                          color: AppColors.neutralDark,
-                        ),
-                        contentPadding: EdgeInsets.all(10)),
-                    style: TextStyles.subtitle1
-                        .copyWith(color: AppColors.neutralDark),
-                    format: DateFormat.yMMMd(
-                        Localizations.localeOf(context).toString()),
-                    onShowPicker: (context, currentValue) {
-                      return showDatePicker(
-                          firstDate: DateTime.fromMillisecondsSinceEpoch(0,
-                              isUtc: true),
-                          lastDate: DateTime(DateTime.now().year + 100),
-                          context: context,
-                          initialDate: currentValue ?? DateTime.now());
-                    },
-                  )),
-              Align(
-                alignment: Alignment.topLeft,
-                child: Text(AppLocalizations.of(context)!.until,
-                    style:
-                        TextStyles.h4.copyWith(color: AppColors.neutralDarker)),
-              ),
-              Align(
-                  alignment: Alignment.topRight,
-                  child: DateTimeField(
-                    onChanged: (value) {
-                      until = value;
-                    },
-                    textAlign: TextAlign.start,
-                    decoration: const InputDecoration(
-                        fillColor: AppColors.baseMedium,
-                        filled: true,
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        suffixIcon: Icon(
-                          Icons.date_range,
-                          color: AppColors.neutralDark,
-                        ),
-                        contentPadding: EdgeInsets.all(10)),
-                    style: TextStyles.subtitle1
-                        .copyWith(color: AppColors.neutralDark),
-                    format: DateFormat.yMMMd(
-                        Localizations.localeOf(context).toString()),
-                    onShowPicker: (context, currentValue) {
-                      return showDatePicker(
-                          firstDate: DateTime.fromMillisecondsSinceEpoch(0,
-                              isUtc: true),
-                          lastDate: DateTime(DateTime.now().year + 100),
-                          context: context,
-                          initialDate: currentValue ?? DateTime.now());
-                    },
-                  )),
+              TableRow(children: [
+                TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child: Text(AppLocalizations.of(context)!.since,
+                        style: TextStyles.h4
+                            .copyWith(color: AppColors.neutralDarker))),
+                Row(
+                  children: [
+                    Flexible(
+                        child: DateTimeField(
+                      controller: dateSinceTextController,
+                      onChanged: (value) {
+                        since = value;
+                      },
+                      resetIcon: null,
+                      textAlign: TextAlign.start,
+                      decoration: const InputDecoration(
+                          fillColor: AppColors.baseMedium,
+                          filled: true,
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          prefixIcon: Icon(
+                            Icons.date_range,
+                            color: AppColors.neutralDark,
+                          ),
+                          contentPadding: EdgeInsets.all(10)),
+                      style: TextStyles.subtitle1
+                          .copyWith(color: AppColors.neutralDark),
+                      format: DateFormat.yMMMd(
+                          Localizations.localeOf(context).toString()),
+                      onShowPicker: (context, currentValue) {
+                        return showDatePicker(
+                            firstDate: DateTime.fromMillisecondsSinceEpoch(0,
+                                isUtc: true),
+                            lastDate: DateTime(DateTime.now().year + 100),
+                            context: context,
+                            initialDate: currentValue ?? DateTime.now());
+                      },
+                    )),
+                    IconButton(
+                        hoverColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onPressed: dateSinceTextController.clear,
+                        icon: const Icon(
+                          Icons.clear,
+                          color: AppColors.neutralDarker,
+                          size: 24,
+                        ))
+                  ],
+                )
+              ]),
+              const TableRow(children: [
+                SizedBox(
+                  height: 15,
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+              ]),
+              TableRow(children: [
+                TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child: Text(AppLocalizations.of(context)!.until,
+                        style: TextStyles.h4
+                            .copyWith(color: AppColors.neutralDarker))),
+                Row(
+                  children: [
+                    Flexible(
+                        child: DateTimeField(
+                      controller: dateUntilTextController,
+                      onChanged: (value) {
+                        until = value;
+                      },
+                      resetIcon: null,
+                      textAlign: TextAlign.start,
+                      decoration: const InputDecoration(
+                          fillColor: AppColors.baseMedium,
+                          filled: true,
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          prefixIcon: Icon(
+                            Icons.date_range,
+                            color: AppColors.neutralDark,
+                          ),
+                          contentPadding: EdgeInsets.all(10)),
+                      style: TextStyles.subtitle1
+                          .copyWith(color: AppColors.neutralDark),
+                      format: DateFormat.yMMMd(
+                          Localizations.localeOf(context).toString()),
+                      onShowPicker: (context, currentValue) {
+                        return showDatePicker(
+                            firstDate: DateTime.fromMillisecondsSinceEpoch(0,
+                                isUtc: true),
+                            lastDate: DateTime(DateTime.now().year + 100),
+                            context: context,
+                            initialDate: currentValue ?? DateTime.now());
+                      },
+                    )),
+                    IconButton(
+                        hoverColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onPressed: dateUntilTextController.clear,
+                        icon: const Icon(
+                          Icons.clear,
+                          color: AppColors.neutralDarker,
+                          size: 24,
+                        ))
+                  ],
+                )
+              ])
             ],
           )
         ]));
