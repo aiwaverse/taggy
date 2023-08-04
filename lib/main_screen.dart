@@ -4,7 +4,7 @@ import 'package:taggy/constants/text_styles.dart';
 import 'package:taggy/entities/gallery.dart';
 
 import 'package:taggy/entities/search.dart';
-import 'package:taggy/entities/storage.dart';
+import 'package:taggy/storage.dart';
 import 'package:taggy/main_screen_add_popup.dart';
 import 'package:taggy/search_screen.dart';
 

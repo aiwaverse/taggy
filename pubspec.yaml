@@ -52,6 +52,9 @@ dependencies:
   rename: ^2.1.1
   flutter_localizations:
     sdk: flutter
+  sqflite_common_ffi: ^2.3.0
+  path_provider: ^2.0.15
+  provider: ^6.0.5
 
 dev_dependencies:
   flutter_test:
