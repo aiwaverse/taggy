@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:taggy/entities/gallery.dart';
@@ -66,11 +67,10 @@ class GalleryStorageSQLite {
     var storage = GalleryStorageSQLite._();
     sqfliteFfiInit();
     var databaseFactory = databaseFactoryFfi;
-    String dbPath =
-        p.join(await databaseFactory.getDatabasesPath(), "taggy.db");
-    storage._database = await databaseFactory.openDatabase(
-      dbPath,
-    );
+    var appplicationDirectory = await getApplicationDocumentsDirectory();
+    var dbPath =
+        p.join(appplicationDirectory.path, ".taggy", "databases", "taggy.db");
+    storage._database = await databaseFactory.openDatabase(dbPath);
     await storage._configureDatabase();
     return storage;
   }
@@ -82,19 +82,29 @@ class GalleryStorageSQLite {
     await _database.execute('''CREATE TABLE IF NOT EXISTS Image(
             IdImage INTEGER PRIMARY KEY, 
             Path TEXT NOT NULL,
+            Date INTEGER NOT NULL,
             IdDirectory INTEGER,
             FOREIGN KEY(IdDirectory) REFERENCES Directory(IdDirectory) ON DELETE CASCADE
             )''');
+    await _database.execute(
+        '''CREATE INDEX IF NOT EXISTS Index_Image_Date ON Image(Date)''');
     await _database.execute('''CREATE TABLE IF NOT EXISTS Tag(
             IdTag INTEGER PRIMARY KEY, 
-            Description TEXT NOT NULL
+            Description TEXT NOT NULL UNIQUE
             )''');
     await _database.execute('''CREATE TABLE IF NOT EXISTS ImageTag(
             IdTag INTEGER NOT NULL, 
             IdImage INTEGER NOT NULL,
             FOREIGN KEY(IdTag) REFERENCES Tag(IdTag),
-            FOREIGN KEY(IdImage) REFERENCES Image(IdImage)
+            FOREIGN KEY(IdImage) REFERENCES Image(IdImage),
+            PRIMARY KEY (IdTag, IdImage)
             )''');
+    await _database.execute(
+        '''CREATE INDEX IF NOT EXISTS Index_ImageTag_IdTag ON ImageTag(IdTag)''');
+    await _database.execute(
+        '''CREATE INDEX IF NOT EXISTS Index_ImageTag_IdImage ON ImageTag(IdImage)''');
+    await _database.execute(
+        '''CREATE INDEX IF NOT EXISTS Index_ImageTag_IdTag_IdImage ON ImageTag(IdTag, IdImage)''');
   }
 
   DirectoryRepository get directoryRepository {

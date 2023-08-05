@@ -4,27 +4,33 @@ import 'package:taggy/repositories/irepository.dart';
 
 class DirectoryRepository implements IRepository<Directory> {
   final Database _database;
+  static const String table = "Directory";
 
   DirectoryRepository(this._database);
 
-  Future<List<Directory>> getAll() {
-    return Future.value(List.empty());
+  @override
+  Future<Iterable<Directory>> getAll() async {
+    return (await _database.query(table, columns: ['IdDirectory', 'Path'])).map(
+        (row) =>
+            Directory(row["Path"] as String, id: row["IdDirectory"] as int));
   }
 
   @override
-  Future<bool> delete() {
-    return Future.value(true);
+  Future<bool> delete(Directory directory) async {
+    var linesDeleted = await _database
+        .delete(table, where: 'IdDirectory = ?', whereArgs: [directory.id]);
+    return linesDeleted > 0;
   }
 
   @override
-  Future<Directory> insert() {
-    // TODO: implement insert
-    throw UnimplementedError();
+  Future<Directory> insert(Directory directory) async {
+    var id = await _database.insert(table, {"Path": directory.path});
+    directory.id = id;
+    return directory;
   }
 
   @override
-  Future<Directory> update() {
-    // TODO: implement update
+  Future<bool> update(Directory directory) {
     throw UnimplementedError();
   }
 }

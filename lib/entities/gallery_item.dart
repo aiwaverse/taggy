@@ -4,11 +4,12 @@ import 'package:taggy/entities/tag.dart';
 
 class GalleryItem extends Entity {
   final String path;
+  final DateTime date;
   Image? _image;
   Image? _thumbnail;
-  List<Tag> tag = [];
+  List<Tag> tags = [];
 
-  GalleryItem(this.path, {Image? image, int? id}) {
+  GalleryItem(this.path, this.date, {Image? image, int? id}) {
     super.id = id;
   }
 }
