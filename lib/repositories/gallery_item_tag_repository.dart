@@ -32,4 +32,11 @@ class GalleryItemTagRepository {
     }
     return tagsForEachImage;
   }
+
+  Future<void> addTagToImage(int idImage, Iterable<int> idsTags) async {
+    for (var idTag in idsTags) {
+      await _database.insert(table, {"IdImage": idImage, "IdTag": idTag},
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+    }
+  }
 }
