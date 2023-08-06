@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:taggy/constants/app_colors.dart';
 import 'package:taggy/constants/text_styles.dart';
-import 'package:taggy/entities/gallery.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:taggy/entities/tag.dart';
+import 'package:taggy/entities/gallery_item.dart';
+import 'package:taggy/storage.dart';
 
 class ImageDetail extends StatefulWidget {
   const ImageDetail({super.key, required this.imageFile});
@@ -15,16 +18,32 @@ class ImageDetail extends StatefulWidget {
 }
 
 class _ImageDetailState extends State<ImageDetail> {
-  void addTag(String newTag) {
+  late GalleryStorageSQLite storage;
+  @override
+  void initState() {
+    super.initState();
+    storage = context.read<GalleryStorageSQLite>();
+  }
+
+  Future<void> addTag(String description) async {
+    description = description.trim();
+    var tag = Tag(description);
+    if (widget.imageFile.tags.contains(tag)) {
+      return;
+    }
+    await storage.tagRepository.insert(tag);
+    await storage.galleryItemTagRepository
+        .addTagToImage(widget.imageFile.id!, tag);
+    var tags = await storage.galleryItemTagRepository
+        .getTagsFromImage(widget.imageFile);
     setState(() {
-      newTag = newTag.trim();
-      if (!widget.imageFile.tags.contains(Tag(newTag))) {
-        widget.imageFile.tags.add(Tag(newTag));
-      }
+      widget.imageFile.tags = tags;
     });
   }
 
-  void removeTag(Tag tag) {
+  Future<void> removeTag(Tag tag) async {
+    await storage.galleryItemTagRepository
+        .delete(widget.imageFile.id!, tag.id!);
     setState(() {
       widget.imageFile.tags.remove(tag);
     });
@@ -43,7 +62,7 @@ class _ImageDetailState extends State<ImageDetail> {
               child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.7,
                   child: Image(
-                      image: widget.imageFile.image.image,
+                      image: widget.imageFile.image,
                       filterQuality: FilterQuality.medium,
                       fit: BoxFit.contain))),
           Padding(
@@ -58,7 +77,7 @@ class _ImageDetailState extends State<ImageDetail> {
                           SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: SelectableText(
-                                widget.imageFile.fileName,
+                                widget.imageFile.name,
                                 style: TextStyles.h4.copyWith(
                                   color: AppColors.neutralDark,
                                   overflow: TextOverflow.ellipsis,
@@ -70,7 +89,7 @@ class _ImageDetailState extends State<ImageDetail> {
                             height: 8,
                           ),
                           Text(
-                            "${AppLocalizations.of(context)!.date}: ${DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(widget.imageFile.lastModified)}",
+                            "${AppLocalizations.of(context)!.date}: ${DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(widget.imageFile.date)}",
                             style: TextStyles.subtitle1
                                 .copyWith(color: AppColors.neutralDark),
                           )
@@ -121,9 +140,12 @@ class _ImageDetailState extends State<ImageDetail> {
                                     content: TextField(
                                       textInputAction: TextInputAction.done,
                                       onChanged: (value) => content = value,
-                                      onSubmitted: (value) {
+                                      onSubmitted: (value) async {
                                         if (value.isNotEmpty == true) {
-                                          addTag(value);
+                                          await addTag(value);
+                                        }
+                                        if (!context.mounted) {
+                                          return;
                                         }
                                         Navigator.pop(context);
                                       },
@@ -139,9 +161,12 @@ class _ImageDetailState extends State<ImageDetail> {
                                                   color:
                                                       AppColors.neutralDark))),
                                       ElevatedButton(
-                                          onPressed: () {
+                                          onPressed: () async {
                                             if (content?.isNotEmpty == true) {
-                                              addTag(content!);
+                                              await addTag(content!);
+                                            }
+                                            if (!context.mounted) {
+                                              return;
                                             }
                                             Navigator.pop(context);
                                           },
@@ -185,7 +210,7 @@ class _ImageDetailState extends State<ImageDetail> {
                             Align(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  tag.value,
+                                  tag.description,
                                   textAlign: TextAlign.center,
                                   style: TextStyles.subtitle2
                                       .copyWith(color: AppColors.neutralDark),
@@ -199,7 +224,7 @@ class _ImageDetailState extends State<ImageDetail> {
                                   icon: const Icon(Icons.close),
                                   color: AppColors.neutralDark,
                                   iconSize: 24,
-                                  onPressed: () => removeTag(tag),
+                                  onPressed: () async => await removeTag(tag),
                                 ))
                           ])))))
         ]));

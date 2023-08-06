@@ -1,4 +1,6 @@
+import 'package:quiver/strings.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:taggy/extensions.dart';
 import 'package:taggy/repositories/gallery_item_tag_repository.dart';
 import 'package:taggy/repositories/irepository.dart';
 
@@ -11,18 +13,16 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
 
   GalleryItemRepository(this._database);
 
-  Future<Iterable<GalleryItem>> getPaginated(DateTime lastDate,
+  Future<Iterable<GalleryItem>> getPaginated(int date, bool forward,
       {int count = 20}) async {
-    var images = (await _database.rawQuery('''
-      SELECT Image.IdImage
+    var query = '''SELECT Image.IdImage
            , Image.Path
            , Image.Date
-        FROM Image
-       WHERE Image.Date > ?
-    ORDER BY Image.Date
-       LIMIT ?
-       ''', [lastDate.millisecondsSinceEpoch, count]))
-        .map((row) => GalleryItem(row["Path"] as String,
+        FROM Image''';
+    query += forward ? "WHERE Image.Date > ?" : "WHERE Image.Date < ?";
+    query += "ORDER BY Image.Date LIMIT ?";
+    var images = (await _database.rawQuery(query, [date, count])).map((row) =>
+        GalleryItem(row["Path"] as String,
             DateTime.fromMillisecondsSinceEpoch(row["Date"] as int),
             id: row["IdImage"] as int));
 
@@ -30,7 +30,9 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
         .getTagsFromImages(images.map((e) => e.id!).toList());
 
     for (var image in images) {
-      image.tags = tags[image.id] ?? [];
+      image.tags = tags[image.id]?.sorted(
+              (t1, t2) => compareIgnoreCase(t1.description, t2.description)) ??
+          [];
     }
 
     return images;
@@ -41,13 +43,16 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
     throw UnimplementedError();
   }
 
-  Future<Iterable<GalleryItem>> getWithSearch(Search search, DateTime lastDate,
+  Future<Iterable<GalleryItem>> getWithSearch(
+      Search search, int lastDate, bool forward,
       {int count = 20}) async {
     var query = '''SELECT Image.IdImage
            , Image.Path
            , Image.Date
-        FROM Image
-       WHERE Image.Date > ${lastDate.millisecondsSinceEpoch}''';
+        FROM Image''';
+    query += forward
+        ? "WHERE Image.Date > $lastDate"
+        : "WHERE Image.Date < $lastDate";
     if (search.withTags.isNotEmpty) {
       query += '''AND Image.IdImage IN (
         SELECT ImageTag.IdImage
@@ -82,7 +87,9 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
         .getTagsFromImages(images.map((e) => e.id!).toList());
 
     for (var image in images) {
-      image.tags = tags[image.id] ?? [];
+      image.tags = tags[image.id]?.sorted(
+              (t1, t2) => compareIgnoreCase(t1.description, t2.description)) ??
+          [];
     }
 
     return images;
@@ -97,8 +104,9 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
 
   @override
   Future<GalleryItem> insert(GalleryItem item) async {
-    var id =
-        await _database.insert(table, {"Path": item.path, "Date": item.date});
+    var id = await _database.insert(
+        table, {"Path": item.path, "Date": item.date},
+        conflictAlgorithm: ConflictAlgorithm.ignore);
     item.id = id;
     return item;
   }
@@ -106,14 +114,21 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
   Future<GalleryItem> insertWithDirectory(
       GalleryItem item, int idDirectory) async {
     var id = await _database.insert(table,
-        {"Path": item.path, "Date": item.date, "IdDirectory": idDirectory});
+        {"Path": item.path, "Date": item.date, "IdDirectory": idDirectory},
+        conflictAlgorithm: ConflictAlgorithm.ignore);
     item.id = id;
     return item;
   }
 
   @override
   Future<bool> update(GalleryItem item) {
-    // TODO: implement update
     throw UnimplementedError();
+  }
+
+  Future<bool> hasItems() async {
+    var count =
+        (await _database.rawQuery("SELECT EXISTS (SELECT 1 FROM Image) AS exs"))
+            .first["exs"] as int;
+    return count > 0;
   }
 }

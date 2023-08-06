@@ -1,32 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:taggy/constants/app_colors.dart';
 import 'package:taggy/constants/text_styles.dart';
-import 'package:taggy/entities/gallery.dart';
+import 'package:taggy/entities/gallery_item.dart';
 import 'package:taggy/image_detail.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ImageGrid extends StatefulWidget {
   const ImageGrid(
-      {super.key, required this.galleryItems, required this.onSearch});
+      {super.key,
+      required this.galleryItems,
+      required this.onSearch,
+      required this.advancePage,
+      required this.goBackPage});
   final List<GalleryItem> galleryItems;
   final bool onSearch;
+  final Future<void> Function() advancePage;
+  final Future<void> Function() goBackPage;
 
   @override
   State<StatefulWidget> createState() => _ImageGridState();
 }
 
 class _ImageGridState extends State<ImageGrid> {
-  int page = 1;
-  final int imagesPerPage = 20;
   var scrollController = ScrollController();
-
-  bool canAdvance() => widget.galleryItems.length >= (page * imagesPerPage + 1);
+  var page = 1;
+  static const int imagesPerPage = 20;
+  bool canAdvance() => widget.galleryItems.length > imagesPerPage;
   bool canGoBack() => page >= 2;
 
   void advancedPage() {
     setState(() {
       if (canAdvance()) {
         page++;
+        widget.advancePage();
         scrollController.jumpTo(0);
       }
     });
@@ -36,6 +42,7 @@ class _ImageGridState extends State<ImageGrid> {
     setState(() {
       if (canGoBack()) {
         page--;
+        widget.goBackPage();
         scrollController.jumpTo(0);
       }
     });
@@ -81,7 +88,7 @@ class _ImageGridState extends State<ImageGrid> {
                                 image: DecorationImage(
                                     filterQuality: FilterQuality.medium,
                                     fit: BoxFit.cover,
-                                    image: item.image.image)),
+                                    image: item.image)),
                           ))
                   ],
                 ))),

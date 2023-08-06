@@ -2,21 +2,30 @@ import 'package:chips_input/chips_input.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:taggy/constants/app_colors.dart';
 import 'package:taggy/constants/text_styles.dart';
-import 'package:taggy/entities/gallery.dart';
 import 'package:taggy/entities/search.dart';
+import 'package:taggy/entities/tag.dart';
 import 'package:taggy/main_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:taggy/storage.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key, required this.avaliableTags});
-  final Iterable<Tag> avaliableTags;
+  const SearchScreen({super.key});
   @override
   State<StatefulWidget> createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  @override
+  void initState() async {
+    super.initState();
+    availableTags =
+        await context.read<GalleryStorageSQLite>().tagRepository.getAll();
+  }
+
+  late Iterable<Tag> availableTags;
   List<Tag> withTags = [];
   List<Tag> withoutTags = [];
   DateTime? since;
@@ -77,10 +86,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 onChanged: (tags) {
                   withTags = tags;
                 },
-                findSuggestions: (String query) => widget.avaliableTags
+                findSuggestions: (String query) => availableTags
                     .where((element) =>
                         !withoutTags.contains(element) &&
-                        element.value
+                        element.description
                             .toLowerCase()
                             .startsWith(query.toLowerCase()))
                     .toList(),
@@ -90,14 +99,14 @@ class _SearchScreenState extends State<SearchScreen> {
                           const Icon(Icons.close, color: AppColors.neutralDark),
                       onDeleted: () => state.deleteChip(data),
                       backgroundColor: AppColors.primaryLight,
-                      label: Text(data.value,
+                      label: Text(data.description,
                           style: TextStyles.subtitle2
                               .copyWith(color: AppColors.neutralDark)));
                 },
                 suggestionBuilder: (context, tag) {
                   // TODO: Make this pretty
                   return ListTile(
-                    title: Text(tag.value,
+                    title: Text(tag.description,
                         style: TextStyles.subtitle1
                             .copyWith(color: AppColors.neutralDarker)),
                   );
@@ -118,10 +127,12 @@ class _SearchScreenState extends State<SearchScreen> {
             onChanged: (tags) {
               withoutTags = tags;
             },
-            findSuggestions: (String query) => widget.avaliableTags
+            findSuggestions: (String query) => availableTags
                 .where((element) =>
                     !withTags.contains(element) &&
-                    element.value.toLowerCase().startsWith(query.toLowerCase()))
+                    element.description
+                        .toLowerCase()
+                        .startsWith(query.toLowerCase()))
                 .toList(),
             chipBuilder: (context, state, data) {
               return InputChip(
@@ -129,14 +140,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       const Icon(Icons.close, color: AppColors.neutralDark),
                   onDeleted: () => state.deleteChip(data),
                   backgroundColor: AppColors.primaryLight,
-                  label: Text(data.value,
+                  label: Text(data.description,
                       style: TextStyles.subtitle2
                           .copyWith(color: AppColors.neutralDark)));
             },
             suggestionBuilder: (context, tag) {
               // TODO: Make this pretty
               return ListTile(
-                title: Text(tag.value,
+                title: Text(tag.description,
                     style: TextStyles.subtitle1
                         .copyWith(color: AppColors.neutralDarker)),
               );

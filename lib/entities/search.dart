@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:taggy/entities/gallery.dart';
+import 'package:taggy/entities/tag.dart';
 
 class Search {
   Search(

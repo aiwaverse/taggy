@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:taggy/constants/app_colors.dart';
 import 'package:taggy/constants/text_styles.dart';
-import 'package:taggy/entities/gallery.dart';
+import 'package:taggy/entities/directory.dart';
+import 'package:taggy/entities/gallery_item.dart';
 
 import 'package:taggy/entities/search.dart';
+import 'package:taggy/services/gallery_item_service.dart';
 import 'package:taggy/storage.dart';
 import 'package:taggy/main_screen_add_popup.dart';
 import 'package:taggy/search_screen.dart';
@@ -21,32 +26,71 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  late GalleryStorage galleryStorage;
-  List<GalleryItem> galleryItems = [];
-  @override
-  void initState() {
-    super.initState();
-    galleryStorage = GalleryStorageMock();
+  Iterable<GalleryItem> galleryItems = [];
+  bool hasItems = false;
+  late GalleryStorageSQLite storage;
+
+  Future<Iterable<GalleryItem>> getItems() async {
+    var directories = await storage.directoryRepository.getAll();
+    await Future.wait(directories.map((dir) =>
+        GalleryItemService.scanForImages(storage.galleryItemRepository, dir)));
+    hasItems = await storage.galleryItemRepository.hasItems() ||
+        await storage.directoryRepository.hasItems();
+
     if (widget.searchOptions == null) {
-      galleryItems = galleryStorage.getAllItems();
+      return await storage.galleryItemRepository
+          .getPaginated(0, true, count: 21);
     } else {
-      galleryItems = galleryStorage.search(widget.searchOptions!);
+      return await storage.galleryItemRepository
+          .getWithSearch(widget.searchOptions!, 0, true, count: 21);
     }
   }
 
-  Future<void> addFolder(String folder) async {
-    galleryStorage.getCompleteGallery().addFolder(folder);
-    await galleryStorage.getCompleteGallery().refresh();
+  @override
+  void initState() async {
+    super.initState();
+    storage = context.read<GalleryStorageSQLite>();
+    galleryItems = await getItems();
+  }
+
+  Future<void> addFolder(String path) async {
+    await storage.directoryRepository.insert(Directory(path));
+    var items = await getItems();
     setState(() {
-      galleryItems = galleryStorage.getAllItems();
+      galleryItems = items;
     });
   }
 
-  void addFiles(List<String> files) {
-    galleryStorage.getCompleteGallery().addFiles(files);
+  void addFiles(List<String> files) async {
+    for (var file in files) {
+      var f = File(file);
+      await storage.galleryItemRepository
+          .insert(GalleryItem(f.path, (await f.stat()).changed));
+    }
+    var items = await getItems();
     setState(() {
-      galleryItems = galleryStorage.getAllItems();
+      galleryItems = items;
     });
+  }
+
+  Future<void> advancePage() async {
+    widget.searchOptions == null
+        ? await storage.galleryItemRepository
+            .getPaginated(galleryItems.last.date.millisecondsSinceEpoch, true)
+        : await storage.galleryItemRepository.getWithSearch(
+            widget.searchOptions!,
+            galleryItems.last.date.millisecondsSinceEpoch,
+            true);
+  }
+
+  Future<void> goBackPage() async {
+    widget.searchOptions == null
+        ? await storage.galleryItemRepository
+            .getPaginated(galleryItems.first.date.millisecondsSinceEpoch, false)
+        : await storage.galleryItemRepository.getWithSearch(
+            widget.searchOptions!,
+            galleryItems.first.date.millisecondsSinceEpoch,
+            true);
   }
 
   @override
@@ -73,11 +117,7 @@ class _MainScreenState extends State<MainScreen> {
                       child: ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => SearchScreen(
-                                    avaliableTags: galleryItems
-                                        .map((item) => item.tags)
-                                        .expand((x) => x)
-                                        .toSet())));
+                                builder: (context) => const SearchScreen()));
                           },
                           style: ElevatedButton.styleFrom(
                             shadowColor: Colors.transparent,
@@ -120,10 +160,12 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
       backgroundColor: AppColors.baseLight,
-      body: galleryStorage.hasContent()
+      body: hasItems
           ? ImageGrid(
-              galleryItems: galleryItems,
+              galleryItems: galleryItems.toList(),
               onSearch: widget.searchOptions != null,
+              advancePage: advancePage,
+              goBackPage: goBackPage,
             )
           : Center(
               child: Text(

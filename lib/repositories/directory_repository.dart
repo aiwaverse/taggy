@@ -33,4 +33,11 @@ class DirectoryRepository implements IRepository<Directory> {
   Future<bool> update(Directory directory) {
     throw UnimplementedError();
   }
+
+  Future<bool> hasItems() async {
+    var count = (await _database
+            .rawQuery("SELECT EXISTS (SELECT 1 FROM Directory) AS exs"))
+        .first["exs"] as int;
+    return count > 0;
+  }
 }
