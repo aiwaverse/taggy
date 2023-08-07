@@ -3,6 +3,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:taggy/extensions.dart';
 import 'package:taggy/repositories/gallery_item_tag_repository.dart';
 import 'package:taggy/repositories/irepository.dart';
+import 'package:taggy/services/gallery_item_service.dart';
 
 import '../entities/gallery_item.dart';
 import '../entities/search.dart';
@@ -13,17 +14,48 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
 
   GalleryItemRepository(this._database);
 
-  Future<Iterable<GalleryItem>> getPaginated(int date, bool forward,
+  Future<Iterable<GalleryItem>> getPaginatedFirstPage({int count = 20}) async {
+    var query = '''SELECT Image.IdImage
+           , Image.Path
+           , Image.DateWithId
+        FROM Image''';
+    query += "ORDER BY Image.DateWithId DESC LIMIT ?";
+    var images = (await _database.rawQuery(query, [count])).map((row) =>
+        GalleryItem(
+            row["Path"] as String,
+            GalleryItemService.generateDateFromDateWithId(
+                row["DateWithId"] as String),
+            id: row["IdImage"] as int));
+
+    var tags = await GalleryItemTagRepository(_database)
+        .getTagsFromImages(images.map((e) => e.id!).toList());
+
+    for (var image in images) {
+      image.tags = tags[image.id]?.sorted(
+              (t1, t2) => compareIgnoreCase(t1.description, t2.description)) ??
+          [];
+    }
+
+    return images;
+  }
+
+  Future<Iterable<GalleryItem>> getPaginated(GalleryItem lastItem, bool forward,
       {int count = 20}) async {
     var query = '''SELECT Image.IdImage
            , Image.Path
-           , Image.Date
+           , Image.DateWithId
         FROM Image''';
-    query += forward ? "WHERE Image.Date > ?" : "WHERE Image.Date < ?";
-    query += "ORDER BY Image.Date LIMIT ?";
-    var images = (await _database.rawQuery(query, [date, count])).map((row) =>
-        GalleryItem(row["Path"] as String,
-            DateTime.fromMillisecondsSinceEpoch(row["Date"] as int),
+    query +=
+        forward ? "WHERE Image.DateWithId > ?" : "WHERE Image.DateWithId < ?";
+    query += "ORDER BY Image.DateWithId DESC LIMIT ?";
+    var images = (await _database.rawQuery(query, [
+      GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!),
+      count
+    ]))
+        .map((row) => GalleryItem(
+            row["Path"] as String,
+            GalleryItemService.generateDateFromDateWithId(
+                row["DateWithId"] as String),
             id: row["IdImage"] as int));
 
     var tags = await GalleryItemTagRepository(_database)
@@ -43,16 +75,12 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
     throw UnimplementedError();
   }
 
-  Future<Iterable<GalleryItem>> getWithSearch(
-      Search search, int lastDate, bool forward,
+  Future<Iterable<GalleryItem>> getWithSearchFirstPage(Search search,
       {int count = 20}) async {
     var query = '''SELECT Image.IdImage
            , Image.Path
-           , Image.Date
+           , Image.DateWithId
         FROM Image''';
-    query += forward
-        ? "WHERE Image.Date > $lastDate"
-        : "WHERE Image.Date < $lastDate";
     if (search.withTags.isNotEmpty) {
       query += '''AND Image.IdImage IN (
         SELECT ImageTag.IdImage
@@ -71,16 +99,78 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
       ''';
     }
     if (search.since != null) {
-      query += "AND Image.Date >= ${search.since!.millisecondsSinceEpoch}";
+      var dateQueryVal =
+          query += GalleryItemService.generateDateWithId(search.since!, 0);
+      "AND Image.DateWithId >= $dateQueryVal";
     }
     if (search.until != null) {
-      query += "AND Image.Date <= ${search.until!.millisecondsSinceEpoch}";
+      var dateQueryVal = query += GalleryItemService.generateDateWithId(
+          search.until!.add(const Duration(milliseconds: 1)), 0);
+      query += "AND Image.DateWithId <= $dateQueryVal";
     }
-    query += "ORDER BY Image.Date LIMIT $count";
+    query += "ORDER BY Image.DateWithId DESC LIMIT $count";
 
     var images = (await _database.rawQuery(query)).map((row) => GalleryItem(
         row["Path"] as String,
-        DateTime.fromMillisecondsSinceEpoch(row["Date"] as int),
+        GalleryItemService.generateDateFromDateWithId(
+            row["DateWithId"] as String),
+        id: row["IdImage"] as int));
+
+    var tags = await GalleryItemTagRepository(_database)
+        .getTagsFromImages(images.map((e) => e.id!).toList());
+
+    for (var image in images) {
+      image.tags = tags[image.id]?.sorted(
+              (t1, t2) => compareIgnoreCase(t1.description, t2.description)) ??
+          [];
+    }
+
+    return images;
+  }
+
+  Future<Iterable<GalleryItem>> getWithSearch(
+      Search search, GalleryItem lastItem, bool forward,
+      {int count = 20}) async {
+    var query = '''SELECT Image.IdImage
+           , Image.Path
+           , Image.DateWithId
+        FROM Image''';
+    query += forward
+        ? "WHERE Image.DateWithId > ${GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!)}"
+        : "WHERE Image.DateWithId < ${GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!)}";
+    if (search.withTags.isNotEmpty) {
+      query += '''AND Image.IdImage IN (
+        SELECT ImageTag.IdImage
+          FROM ImageTag
+         WHERE ImageTag.IdTag IN (${search.withTags.join(", ")})
+      GROUP BY ImageTag.IdImage
+        HAVING COUNT(ImageTag.IdTag) = ${search.withTags.length}
+      )''';
+    }
+    if (search.withoutTags.isNotEmpty) {
+      query += '''AND Image.IdImage NOT IN (
+        SELECT ImageTag.IdImage
+          FROM ImageTag
+         WHERE ImageTag.IdTag IN (${search.withoutTags.join(", ")})
+      )
+      ''';
+    }
+    if (search.since != null) {
+      var dateQueryVal =
+          query += GalleryItemService.generateDateWithId(search.since!, 0);
+      "AND Image.DateWithId >= $dateQueryVal";
+    }
+    if (search.until != null) {
+      var dateQueryVal = query += GalleryItemService.generateDateWithId(
+          search.until!.add(const Duration(milliseconds: 1)), 0);
+      query += "AND Image.DateWithId <= $dateQueryVal";
+    }
+    query += "ORDER BY Image.DateWithId DESC LIMIT $count";
+
+    var images = (await _database.rawQuery(query)).map((row) => GalleryItem(
+        row["Path"] as String,
+        GalleryItemService.generateDateFromDateWithId(
+            row["DateWithId"] as String),
         id: row["IdImage"] as int));
 
     var tags = await GalleryItemTagRepository(_database)
@@ -104,8 +194,16 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
 
   @override
   Future<GalleryItem> insert(GalleryItem item) async {
+    var nextId = (await _database
+            .rawQuery("SELECT MAX(ImageId) + 1 AS NextId FROM Image"))
+        .first["NextId"] as int;
+
     var id = await _database.insert(
-        table, {"Path": item.path, "Date": item.date},
+        table,
+        {
+          "Path": item.path,
+          "DateWithId": GalleryItemService.generateDateWithId(item.date, nextId)
+        },
         conflictAlgorithm: ConflictAlgorithm.ignore);
     item.id = id;
     return item;
@@ -113,8 +211,18 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
 
   Future<GalleryItem> insertWithDirectory(
       GalleryItem item, int idDirectory) async {
-    var id = await _database.insert(table,
-        {"Path": item.path, "Date": item.date, "IdDirectory": idDirectory},
+    var nextId = (await _database
+            .rawQuery("SELECT MAX(ImageId) + 1 AS NextId FROM Image"))
+        .first["NextId"] as int;
+
+    var id = await _database.insert(
+        table,
+        {
+          "Path": item.path,
+          "DateWithId":
+              GalleryItemService.generateDateWithId(item.date, nextId),
+          "IdDirectory": idDirectory
+        },
         conflictAlgorithm: ConflictAlgorithm.ignore);
     item.id = id;
     return item;
