@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
@@ -96,15 +98,26 @@ class _ImageDetailState extends State<ImageDetail> {
                         ])),
                     Row(children: [
                       IconButton(
-                          onPressed: () {
-                            Share.shareXFiles([XFile(widget.imageFile.path)]);
-                          },
-                          tooltip: AppLocalizations.of(context)!.share,
-                          icon: const Icon(
+                          hoverColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          onPressed: Platform.isWindows || Platform.isLinux
+                              ? null
+                              : () {
+                                  Share.shareXFiles(
+                                      [XFile(widget.imageFile.path)]);
+                                },
+                          tooltip: Platform.isWindows || Platform.isLinux
+                              ? AppLocalizations.of(context)!.shareUnavaliable
+                              : AppLocalizations.of(context)!.share,
+                          icon: Icon(
                             Icons.share,
-                            color: AppColors.neutralDark,
+                            color: Platform.isWindows || Platform.isLinux
+                                ? Theme.of(context).disabledColor
+                                : AppColors.neutralDark,
                           )),
                       IconButton(
+                          hoverColor: Colors.transparent,
+                          splashColor: Colors.transparent,
                           onPressed: () async {
                             await OpenFile.open(widget.imageFile.path);
                           },

@@ -8,6 +8,7 @@
     "files": "Arquivos",
     "tags" : "Tags",
     "share": "Compartilhar",
+    "shareUnavaliable" : "Compartilhar não está disponível para Linux nem para Windows",
     "openExternally" : "Abrir externamente",
     "addTag" : "Adicionar tag",
     "cancel" : "Cancelar",

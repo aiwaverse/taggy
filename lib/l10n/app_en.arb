@@ -8,6 +8,7 @@
     "files": "Files",
     "tags" : "Tags",
     "share": "Share",
+    "shareUnavaliable" : "Share is not avaliable on Linux nor Windows",
     "openExternally" : "Open externally",
     "addTag" : "Add tag",
     "cancel" : "Cancel",
