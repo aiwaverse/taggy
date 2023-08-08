@@ -10,7 +10,6 @@ import 'package:taggy/constants/text_styles.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:taggy/entities/tag.dart';
 import 'package:taggy/entities/gallery_item.dart';
-import 'package:taggy/extensions.dart';
 import 'package:taggy/storage.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
