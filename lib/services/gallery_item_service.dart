@@ -2,7 +2,6 @@ import 'dart:io' as io;
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:mime/mime.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:taggy/entities/directory.dart';
@@ -48,11 +47,13 @@ class GalleryItemService {
   }
 
   static String generateDateWithId(DateTime date, int id) {
-    return (Int64(date.millisecondsSinceEpoch) << 32 | id).toStringUnsigned();
+    return (BigInt.from(date.millisecondsSinceEpoch).toUnsigned(64) << 32 |
+            BigInt.from(id))
+        .toString();
   }
 
   static DateTime generateDateFromDateWithId(String dateWithId) {
     return DateTime.fromMillisecondsSinceEpoch(
-        Int64.parseInt(dateWithId).shiftRightUnsigned(32).toInt());
+        (BigInt.parse(dateWithId) >> 32).toInt());
   }
 }

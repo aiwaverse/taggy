@@ -35,7 +35,9 @@ class GalleryItemTagRepository {
             relation["Description"] as String,
             id: relation["IdTag"] as int));
       } else {
-        tagsForEachImage[relation["IdImage"] as int] = [];
+        tagsForEachImage[relation["IdImage"] as int] = [
+          Tag(relation["Description"] as String, id: relation["IdTag"] as int)
+        ];
       }
     }
     return tagsForEachImage;

@@ -13,24 +13,30 @@ class Taggy extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Taggy',
-      debugShowCheckedModeBanner: false,
-      scrollBehavior: MyCustomScrollBehavior(),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Provider(
-          create: (_) async => await GalleryStorageSQLite.create(),
-          lazy: false,
-          child: const MainScreen()),
-    );
+    return FutureBuilder(
+        future: GalleryStorageSQLite.create(),
+        builder: ((context, snapshot) {
+          if (snapshot.hasData) {
+            return Provider.value(
+                value: snapshot.data!,
+                child: MaterialApp(
+                    title: 'Taggy',
+                    debugShowCheckedModeBanner: false,
+                    scrollBehavior: MyCustomScrollBehavior(),
+                    localizationsDelegates: const [
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    theme: ThemeData(
+                      primarySwatch: Colors.blue,
+                    ),
+                    home: const MainScreen()));
+          } else {
+            return const SizedBox.shrink();
+          }
+        }));
   }
 }

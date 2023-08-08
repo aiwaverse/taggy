@@ -39,18 +39,18 @@ class _MainScreenState extends State<MainScreen> {
 
     if (widget.searchOptions == null) {
       return await storage.galleryItemRepository
-          .getPaginated(0, true, count: 21);
+          .getPaginatedFirstPage(count: 21);
     } else {
       return await storage.galleryItemRepository
-          .getWithSearch(widget.searchOptions!, 0, true, count: 21);
+          .getWithSearchFirstPage(widget.searchOptions!, count: 21);
     }
   }
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
     storage = context.read<GalleryStorageSQLite>();
-    galleryItems = await getItems();
+    getItems().then((items) => setState(() => galleryItems = items));
   }
 
   Future<void> addFolder(String path) async {
@@ -76,21 +76,19 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> advancePage() async {
     widget.searchOptions == null
         ? await storage.galleryItemRepository
-            .getPaginated(galleryItems.last.date.millisecondsSinceEpoch, true)
+            .getPaginated(galleryItems.elementAt(galleryItems.length - 2), true)
         : await storage.galleryItemRepository.getWithSearch(
             widget.searchOptions!,
-            galleryItems.last.date.millisecondsSinceEpoch,
+            galleryItems.elementAt(galleryItems.length - 2),
             true);
   }
 
   Future<void> goBackPage() async {
     widget.searchOptions == null
         ? await storage.galleryItemRepository
-            .getPaginated(galleryItems.first.date.millisecondsSinceEpoch, false)
-        : await storage.galleryItemRepository.getWithSearch(
-            widget.searchOptions!,
-            galleryItems.first.date.millisecondsSinceEpoch,
-            true);
+            .getPaginated(galleryItems.first, false)
+        : await storage.galleryItemRepository
+            .getWithSearch(widget.searchOptions!, galleryItems.first, true);
   }
 
   @override

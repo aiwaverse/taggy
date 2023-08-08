@@ -32,12 +32,12 @@ class GalleryStorageSQLite {
     await _database.execute('''CREATE TABLE IF NOT EXISTS Image(
             IdImage INTEGER PRIMARY KEY, 
             Path TEXT NOT NULL,
-            DateWithId INTEGER NOT NULL,
+            DateWithId TEXT NOT NULL,
             IdDirectory INTEGER,
             FOREIGN KEY(IdDirectory) REFERENCES Directory(IdDirectory) ON DELETE CASCADE
             )''');
     await _database.execute(
-        '''CREATE INDEX IF NOT EXISTS Index_Image_DateWithId ON Image(Date)''');
+        '''CREATE INDEX IF NOT EXISTS Index_Image_DateWithId ON Image(DateWithId)''');
     await _database.execute('''CREATE TABLE IF NOT EXISTS Tag(
             IdTag INTEGER PRIMARY KEY, 
             Description TEXT NOT NULL UNIQUE

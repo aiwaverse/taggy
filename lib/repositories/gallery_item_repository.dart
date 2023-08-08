@@ -17,15 +17,17 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
   Future<Iterable<GalleryItem>> getPaginatedFirstPage({int count = 20}) async {
     var query = '''SELECT Image.IdImage
            , Image.Path
-           , Image.DateWithId
+           , DateWithId
         FROM Image''';
-    query += "ORDER BY Image.DateWithId DESC LIMIT ?";
-    var images = (await _database.rawQuery(query, [count])).map((row) =>
-        GalleryItem(
+    query += " ORDER BY Image.DateWithId DESC LIMIT ?";
+    var imagesResult = (await _database.rawQuery(query, [count]));
+    var images = imagesResult
+        .map((row) => GalleryItem(
             row["Path"] as String,
             GalleryItemService.generateDateFromDateWithId(
                 row["DateWithId"] as String),
-            id: row["IdImage"] as int));
+            id: row["IdImage"] as int))
+        .toList();
 
     var tags = await GalleryItemTagRepository(_database)
         .getTagsFromImages(images.map((e) => e.id!).toList());
@@ -46,8 +48,8 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
            , Image.DateWithId
         FROM Image''';
     query +=
-        forward ? "WHERE Image.DateWithId > ?" : "WHERE Image.DateWithId < ?";
-    query += "ORDER BY Image.DateWithId DESC LIMIT ?";
+        forward ? " WHERE Image.DateWithId > ?" : "WHERE Image.DateWithId < ?";
+    query += " ORDER BY Image.DateWithId DESC LIMIT ?";
     var images = (await _database.rawQuery(query, [
       GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!),
       count
@@ -80,9 +82,10 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
     var query = '''SELECT Image.IdImage
            , Image.Path
            , Image.DateWithId
-        FROM Image''';
+        FROM Image
+       WHERE 1=1''';
     if (search.withTags.isNotEmpty) {
-      query += '''AND Image.IdImage IN (
+      query += ''' AND Image.IdImage IN (
         SELECT ImageTag.IdImage
           FROM ImageTag
          WHERE ImageTag.IdTag IN (${search.withTags.join(", ")})
@@ -91,7 +94,7 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
       )''';
     }
     if (search.withoutTags.isNotEmpty) {
-      query += '''AND Image.IdImage NOT IN (
+      query += ''' AND Image.IdImage NOT IN (
         SELECT ImageTag.IdImage
           FROM ImageTag
          WHERE ImageTag.IdTag IN (${search.withoutTags.join(", ")})
@@ -101,14 +104,14 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
     if (search.since != null) {
       var dateQueryVal =
           query += GalleryItemService.generateDateWithId(search.since!, 0);
-      "AND Image.DateWithId >= $dateQueryVal";
+      " AND Image.DateWithId >= $dateQueryVal";
     }
     if (search.until != null) {
       var dateQueryVal = query += GalleryItemService.generateDateWithId(
           search.until!.add(const Duration(milliseconds: 1)), 0);
-      query += "AND Image.DateWithId <= $dateQueryVal";
+      query += " AND Image.DateWithId <= $dateQueryVal";
     }
-    query += "ORDER BY Image.DateWithId DESC LIMIT $count";
+    query += " ORDER BY Image.DateWithId DESC LIMIT $count";
 
     var images = (await _database.rawQuery(query)).map((row) => GalleryItem(
         row["Path"] as String,
@@ -194,8 +197,8 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
 
   @override
   Future<GalleryItem> insert(GalleryItem item) async {
-    var nextId = (await _database
-            .rawQuery("SELECT MAX(ImageId) + 1 AS NextId FROM Image"))
+    var nextId = (await _database.rawQuery(
+            "SELECT IFNULL(MAX(IdImage), 0) + 1 AS NextId FROM Image"))
         .first["NextId"] as int;
 
     var id = await _database.insert(
@@ -212,7 +215,7 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
   Future<GalleryItem> insertWithDirectory(
       GalleryItem item, int idDirectory) async {
     var nextId = (await _database
-            .rawQuery("SELECT MAX(ImageId) + 1 AS NextId FROM Image"))
+            .rawQuery("SELECT MAX(IdImage) + 1 AS NextId FROM Image"))
         .first["NextId"] as int;
 
     var id = await _database.insert(
