@@ -15,16 +15,24 @@ class TagRepository implements IRepository<Tag> {
   }
 
   @override
-  Future<Iterable<Tag>> getAll() async {
-    return (await _database.query(table, columns: ["IdTag", "Description"]))
-        .map((row) =>
-            Tag(row["Description"] as String, id: row["IdTag"] as int));
+  Future<List<Tag>> getAll() async {
+    return (await _database.query(table,
+            columns: ["IdTag", "Description"], orderBy: "Description"))
+        .map(
+            (row) => Tag(row["Description"] as String, id: row["IdTag"] as int))
+        .toList();
   }
 
   @override
   Future<Tag> insert(Tag tag) async {
     var id = await _database.insert(table, {"Description": tag.description},
         conflictAlgorithm: ConflictAlgorithm.ignore);
+    if (id == 0) {
+      id = (await _database.query(table,
+              where: 'Description = ?', whereArgs: [tag.description]))
+          .map((e) => e["IdTag"] as int)
+          .first;
+    }
     tag.id = id;
     return tag;
   }

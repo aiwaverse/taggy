@@ -10,7 +10,9 @@ import 'package:taggy/constants/text_styles.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:taggy/entities/tag.dart';
 import 'package:taggy/entities/gallery_item.dart';
+import 'package:taggy/extensions.dart';
 import 'package:taggy/storage.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class ImageDetail extends StatefulWidget {
   const ImageDetail({super.key, required this.imageFile});
@@ -21,10 +23,13 @@ class ImageDetail extends StatefulWidget {
 
 class _ImageDetailState extends State<ImageDetail> {
   late GalleryStorageSQLite storage;
+  late List<Tag> _allTags;
+  final _textEditingController = TextEditingController();
   @override
   void initState() {
     super.initState();
     storage = context.read<GalleryStorageSQLite>();
+    storage.tagRepository.getAll().then((value) => _allTags = value);
   }
 
   Future<void> addTag(String description) async {
@@ -152,18 +157,50 @@ class _ImageDetailState extends State<ImageDetail> {
                                   return AlertDialog(
                                     title: Text(
                                         AppLocalizations.of(context)!.addTag),
-                                    content: TextField(
-                                      textInputAction: TextInputAction.done,
-                                      onChanged: (value) => content = value,
-                                      onSubmitted: (value) async {
-                                        if (value.isNotEmpty == true) {
-                                          await addTag(value);
-                                        }
-                                        if (!context.mounted) {
-                                          return;
-                                        }
-                                        Navigator.pop(context);
-                                      },
+                                    content: TypeAheadField(
+                                      hideOnEmpty: true,
+                                      hideOnLoading: true,
+                                      textFieldConfiguration:
+                                          TextFieldConfiguration(
+                                              onChanged: (value) =>
+                                                  content = value,
+                                              onSubmitted: (value) {
+                                                if (value.isNotEmpty) {
+                                                  addTag(value).whenComplete(
+                                                      () => Navigator.pop(
+                                                          context));
+                                                }
+                                              },
+                                              textInputAction:
+                                                  TextInputAction.done,
+                                              controller:
+                                                  _textEditingController),
+                                      suggestionsCallback: (pattern) =>
+                                          _allTags.where((element) {
+                                        var descriptionLowerCase =
+                                            element.description.toLowerCase();
+                                        var patternLowerCase =
+                                            pattern.toLowerCase();
+                                        return !widget.imageFile.tags
+                                                .contains(element) &&
+                                            patternLowerCase !=
+                                                descriptionLowerCase &&
+                                            descriptionLowerCase.startsWith(
+                                                pattern.toLowerCase());
+                                      }),
+                                      itemBuilder: (context, itemData) =>
+                                          Padding(
+                                              padding: const EdgeInsets.all(10),
+                                              child: Text(
+                                                itemData.description,
+                                                style: TextStyles.h5.copyWith(
+                                                    color: AppColors
+                                                        .neutralDarker),
+                                              )),
+                                      onSuggestionSelected: (suggestion) =>
+                                          _textEditingController.value =
+                                              TextEditingValue(
+                                                  text: suggestion.description),
                                     ),
                                     actions: [
                                       OutlinedButton(
@@ -176,14 +213,11 @@ class _ImageDetailState extends State<ImageDetail> {
                                                   color:
                                                       AppColors.neutralDark))),
                                       ElevatedButton(
-                                          onPressed: () async {
+                                          onPressed: () {
                                             if (content?.isNotEmpty == true) {
-                                              await addTag(content!);
+                                              addTag(content!).whenComplete(
+                                                  () => Navigator.pop(context));
                                             }
-                                            if (!context.mounted) {
-                                              return;
-                                            }
-                                            Navigator.pop(context);
                                           },
                                           child: Text(
                                             AppLocalizations.of(context)!.ok,
@@ -191,7 +225,7 @@ class _ImageDetailState extends State<ImageDetail> {
                                           ))
                                     ],
                                   );
-                                });
+                                }).then((_) => _textEditingController.clear());
                           },
                           style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all(

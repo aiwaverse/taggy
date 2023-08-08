@@ -1,3 +1,4 @@
+import 'package:quiver/strings.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:taggy/entities/gallery_item.dart';
 import 'package:taggy/entities/tag.dart';
@@ -55,7 +56,7 @@ class GalleryItemTagRepository {
         .map(
             (row) => Tag(row["Description"] as String, id: row["IdTag"] as int))
         .toList()
-        .sorted();
+        .sorted((t1, t2) => compareIgnoreCase(t1.description, t2.description));
   }
 
   Future<void> addTagsToImage(int idImage, Iterable<int> idsTags) async {

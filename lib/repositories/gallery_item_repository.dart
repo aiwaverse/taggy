@@ -89,7 +89,7 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
       query += ''' AND Image.IdImage IN (
         SELECT ImageTag.IdImage
           FROM ImageTag
-         WHERE ImageTag.IdTag IN (${search.withTags.join(", ")})
+         WHERE ImageTag.IdTag IN (${search.withTags.map((t) => t.id).join(", ")})
       GROUP BY ImageTag.IdImage
         HAVING COUNT(ImageTag.IdTag) = ${search.withTags.length}
       )''';
@@ -98,7 +98,7 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
       query += ''' AND Image.IdImage NOT IN (
         SELECT ImageTag.IdImage
           FROM ImageTag
-         WHERE ImageTag.IdTag IN (${search.withoutTags.join(", ")})
+         WHERE ImageTag.IdTag IN (${search.withoutTags.map((t) => t.id).join(", ")})
       )
       ''';
     }
