@@ -26,11 +26,11 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  Iterable<GalleryItem> galleryItems = [];
+  List<GalleryItem> galleryItems = [];
   bool hasItems = false;
   late GalleryStorageSQLite storage;
 
-  Future<Iterable<GalleryItem>> getItems() async {
+  Future<List<GalleryItem>> getItemsFirstTime() async {
     var directories = await storage.directoryRepository.getAll();
     await Future.wait(directories.map((dir) =>
         GalleryItemService.scanForImages(storage.galleryItemRepository, dir)));
@@ -50,12 +50,12 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     storage = context.read<GalleryStorageSQLite>();
-    getItems().then((items) => setState(() => galleryItems = items));
+    getItemsFirstTime().then((items) => setState(() => galleryItems = items));
   }
 
   Future<void> addFolder(String path) async {
     await storage.directoryRepository.insert(Directory(path));
-    var items = await getItems();
+    var items = await getItemsFirstTime();
     setState(() {
       galleryItems = items;
     });
@@ -65,30 +65,36 @@ class _MainScreenState extends State<MainScreen> {
     for (var file in files) {
       var f = File(file);
       await storage.galleryItemRepository
-          .insert(GalleryItem(f.path, (await f.stat()).changed));
+          .insert(GalleryItem(f.path, (await f.stat()).modified));
     }
-    var items = await getItems();
+    var items = await getItemsFirstTime();
     setState(() {
       galleryItems = items;
     });
   }
 
   Future<void> advancePage() async {
-    widget.searchOptions == null
-        ? await storage.galleryItemRepository
-            .getPaginated(galleryItems.elementAt(galleryItems.length - 2), true)
+    var items = widget.searchOptions == null
+        ? await storage.galleryItemRepository.getPaginated(
+            galleryItems[galleryItems.length - 2], true, count: 21)
         : await storage.galleryItemRepository.getWithSearch(
-            widget.searchOptions!,
-            galleryItems.elementAt(galleryItems.length - 2),
-            true);
+            widget.searchOptions!, galleryItems[galleryItems.length - 2], true,
+            count: 21);
+    setState(() {
+      galleryItems = items;
+    });
   }
 
   Future<void> goBackPage() async {
-    widget.searchOptions == null
+    var items = widget.searchOptions == null
         ? await storage.galleryItemRepository
-            .getPaginated(galleryItems.first, false)
-        : await storage.galleryItemRepository
-            .getWithSearch(widget.searchOptions!, galleryItems.first, true);
+            .getPaginated(galleryItems.first, false, count: 21)
+        : await storage.galleryItemRepository.getWithSearch(
+            widget.searchOptions!, galleryItems.first, false,
+            count: 21);
+    setState(() {
+      galleryItems = items;
+    });
   }
 
   @override
@@ -159,12 +165,14 @@ class _MainScreenState extends State<MainScreen> {
       ),
       backgroundColor: AppColors.baseLight,
       body: hasItems
-          ? ImageGrid(
-              galleryItems: galleryItems.toList(),
-              onSearch: widget.searchOptions != null,
-              advancePage: advancePage,
-              goBackPage: goBackPage,
-            )
+          ? Provider.value(
+              value: galleryItems,
+              child: ImageGrid(
+                galleryItems: galleryItems,
+                onSearch: widget.searchOptions != null,
+                advancePage: advancePage,
+                goBackPage: goBackPage,
+              ))
           : Center(
               child: Text(
                 AppLocalizations.of(context)!.addToGalleryMessage,

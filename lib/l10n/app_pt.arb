@@ -19,5 +19,6 @@
     "dateRange" : "Período:",
     "since" : "A partir de:",
     "until" : "Até:",
-    "ok" : "Ok"
+    "ok" : "Ok",
+    "whatDate" : "O data corresponde a data em que a imagem havia sido modificada no momento em que foi inserida na galeria."
 }

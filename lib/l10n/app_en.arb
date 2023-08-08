@@ -19,5 +19,6 @@
     "dateRange" : "Date range:",
     "since" : "Since:",
     "until" : "Until:",
-    "ok" : "Ok"
+    "ok" : "Ok",
+    "whatDate" : "The date corresponds to the date the image was last changed when it was added to the gallery."
 }

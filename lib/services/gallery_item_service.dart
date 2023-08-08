@@ -38,7 +38,7 @@ class GalleryItemService {
           var path = entity.path;
           var mime = lookupMimeType(path)?.split('/').first;
           if (mime == "image") {
-            var item = GalleryItem(path, (await entity.stat()).changed);
+            var item = GalleryItem(path, (await entity.stat()).modified);
             repository.insertWithDirectory(item, directory.id!);
           }
         }

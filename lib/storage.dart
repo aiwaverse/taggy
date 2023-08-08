@@ -28,10 +28,10 @@ class GalleryStorageSQLite {
   Future<void> _configureDatabase() async {
     await _database.execute("PRAGMA FOREIGN_KEYS = ON");
     await _database.execute(
-        "CREATE TABLE IF NOT EXISTS Directory(IdDirectory INTEGER PRIMARY KEY, Path TEXT NOT NULL)");
+        "CREATE TABLE IF NOT EXISTS Directory(IdDirectory INTEGER PRIMARY KEY, Path TEXT NOT NULL UNIQUE)");
     await _database.execute('''CREATE TABLE IF NOT EXISTS Image(
             IdImage INTEGER PRIMARY KEY, 
-            Path TEXT NOT NULL,
+            Path TEXT NOT NULL UNIQUE,
             DateWithId TEXT NOT NULL,
             IdDirectory INTEGER,
             FOREIGN KEY(IdDirectory) REFERENCES Directory(IdDirectory) ON DELETE CASCADE

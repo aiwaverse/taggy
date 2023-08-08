@@ -19,10 +19,13 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    availableTags =
-        await context.read<GalleryStorageSQLite>().tagRepository.getAll();
+    context
+        .read<GalleryStorageSQLite>()
+        .tagRepository
+        .getAll()
+        .then((value) => setState(() => availableTags = value));
   }
 
   late Iterable<Tag> availableTags;
@@ -106,6 +109,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 suggestionBuilder: (context, tag) {
                   // TODO: Make this pretty
                   return ListTile(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
                     title: Text(tag.description,
                         style: TextStyles.subtitle1
                             .copyWith(color: AppColors.neutralDarker)),

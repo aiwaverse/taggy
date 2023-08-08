@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:taggy/constants/app_colors.dart';
 import 'package:taggy/constants/text_styles.dart';
 import 'package:taggy/entities/gallery_item.dart';
 import 'package:taggy/image_detail.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ImageGrid extends StatefulWidget {
   const ImageGrid(
@@ -25,48 +25,38 @@ class _ImageGridState extends State<ImageGrid> {
   var scrollController = ScrollController();
   var page = 1;
   static const int imagesPerPage = 20;
-  bool canAdvance() => widget.galleryItems.length > imagesPerPage;
-  bool canGoBack() => page >= 2;
 
-  void advancedPage() {
-    setState(() {
-      if (canAdvance()) {
-        page++;
-        widget.advancePage();
-        scrollController.jumpTo(0);
-      }
-    });
+  Future<void> advancePage() async {
+    page++;
+    scrollController.jumpTo(0);
+    await widget.advancePage();
   }
 
-  void backPage() {
-    setState(() {
-      if (canGoBack()) {
-        page--;
-        widget.goBackPage();
-        scrollController.jumpTo(0);
-      }
-    });
+  Future<void> goBackPage() async {
+    page--;
+    scrollController.jumpTo(0);
+    await widget.goBackPage();
   }
 
   @override
   Widget build(BuildContext context) {
-    var foundImages = widget.galleryItems.length;
-    var start = (page - 1) * imagesPerPage;
-    var end = (start + imagesPerPage) < foundImages
-        ? (start + imagesPerPage)
-        : foundImages;
+    var items = context.watch<List<GalleryItem>>();
+    bool canAdvance = items.length > imagesPerPage;
+    bool canGoBack = page >= 2;
+
+    //var foundImages = widget.galleryItems.length;
     return Center(
         child: Column(
       children: [
-        widget.onSearch
-            ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: Text(
-                  "${AppLocalizations.of(context)!.imagesFound}: $foundImages",
-                  style: TextStyles.subtitle1
-                      .copyWith(color: AppColors.neutralDarker),
-                ))
-            : const SizedBox.shrink(),
+        // widget.onSearch
+        //     ? Padding(
+        //         padding: const EdgeInsets.all(10),
+        //         child: Text(
+        //           "${AppLocalizations.of(context)!.imagesFound}: $foundImages",
+        //           style: TextStyles.subtitle1
+        //               .copyWith(color: AppColors.neutralDarker),
+        //         ))
+        //     : const SizedBox.shrink(),
         Expanded(
             child: SingleChildScrollView(
                 controller: scrollController,
@@ -75,7 +65,8 @@ class _ImageGridState extends State<ImageGrid> {
                   runSpacing: 4.0,
                   runAlignment: WrapAlignment.start,
                   children: [
-                    for (var item in widget.galleryItems.sublist(start, end))
+                    for (var item in items.sublist(
+                        0, items.length > 20 ? 20 : items.length))
                       GestureDetector(
                           onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
@@ -98,7 +89,7 @@ class _ImageGridState extends State<ImageGrid> {
           children: [
             IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: canGoBack() ? backPage : null,
+              onPressed: canGoBack ? () async => await goBackPage() : null,
               hoverColor: Colors.transparent,
               splashColor: Colors.transparent,
               color: AppColors.neutralDark,
@@ -110,7 +101,7 @@ class _ImageGridState extends State<ImageGrid> {
             const SizedBox(width: 8),
             IconButton(
               icon: const Icon(Icons.arrow_forward),
-              onPressed: canAdvance() ? advancedPage : null,
+              onPressed: canAdvance ? () async => await advancePage() : null,
               hoverColor: Colors.transparent,
               splashColor: Colors.transparent,
               color: AppColors.neutralDark,

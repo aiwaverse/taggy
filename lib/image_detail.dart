@@ -90,11 +90,13 @@ class _ImageDetailState extends State<ImageDetail> {
                           const SizedBox(
                             height: 8,
                           ),
-                          Text(
-                            "${AppLocalizations.of(context)!.date}: ${DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(widget.imageFile.date)}",
-                            style: TextStyles.subtitle1
-                                .copyWith(color: AppColors.neutralDark),
-                          )
+                          Tooltip(
+                              message: AppLocalizations.of(context)!.whatDate,
+                              child: Text(
+                                "${AppLocalizations.of(context)!.date}: ${DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(widget.imageFile.date)}",
+                                style: TextStyles.subtitle1
+                                    .copyWith(color: AppColors.neutralDark),
+                              ))
                         ])),
                     Row(children: [
                       IconButton(
