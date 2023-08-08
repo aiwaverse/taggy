@@ -107,7 +107,6 @@ class _SearchScreenState extends State<SearchScreen> {
                               .copyWith(color: AppColors.neutralDark)));
                 },
                 suggestionBuilder: (context, tag) {
-                  // TODO: Make this pretty
                   return ListTile(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
@@ -150,8 +149,9 @@ class _SearchScreenState extends State<SearchScreen> {
                           .copyWith(color: AppColors.neutralDark)));
             },
             suggestionBuilder: (context, tag) {
-              // TODO: Make this pretty
               return ListTile(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
                 title: Text(tag.description,
                     style: TextStyles.subtitle1
                         .copyWith(color: AppColors.neutralDarker)),
