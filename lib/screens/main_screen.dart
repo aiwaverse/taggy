@@ -2,16 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:taggy/constants/app_colors.dart';
-import 'package:taggy/constants/text_styles.dart';
+import 'package:taggy/utils/constants/app_colors.dart';
+import 'package:taggy/utils/constants/text_styles.dart';
 import 'package:taggy/entities/directory.dart';
 import 'package:taggy/entities/gallery_item.dart';
 
 import 'package:taggy/entities/search.dart';
 import 'package:taggy/services/gallery_item_service.dart';
 import 'package:taggy/storage.dart';
-import 'package:taggy/main_screen_add_popup.dart';
-import 'package:taggy/search_screen.dart';
+import 'package:taggy/screens/main_screen_add_popup.dart';
+import 'package:taggy/screens/search_screen.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

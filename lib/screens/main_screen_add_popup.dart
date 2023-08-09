@@ -1,9 +1,9 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:taggy/constants/text_styles.dart';
+import 'package:taggy/utils/constants/text_styles.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'constants/app_colors.dart';
+import '../utils/constants/app_colors.dart';
 
 enum AddOptions { files, folders }
 

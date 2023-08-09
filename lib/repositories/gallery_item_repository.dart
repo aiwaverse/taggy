@@ -1,6 +1,6 @@
 import 'package:quiver/strings.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:taggy/extensions.dart';
+import 'package:taggy/utils/extensions.dart';
 import 'package:taggy/repositories/gallery_item_tag_repository.dart';
 import 'package:taggy/repositories/irepository.dart';
 import 'package:taggy/services/gallery_item_service.dart';

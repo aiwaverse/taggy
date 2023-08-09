@@ -2,7 +2,7 @@ import 'package:quiver/strings.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:taggy/entities/gallery_item.dart';
 import 'package:taggy/entities/tag.dart';
-import 'package:taggy/extensions.dart';
+import 'package:taggy/utils/extensions.dart';
 
 class GalleryItemTagRepository {
   final Database _database;

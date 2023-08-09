@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:taggy/constants/app_colors.dart';
-import 'package:taggy/constants/text_styles.dart';
+import 'package:taggy/utils/constants/app_colors.dart';
+import 'package:taggy/utils/constants/text_styles.dart';
 import 'package:taggy/entities/gallery_item.dart';
-import 'package:taggy/image_detail.dart';
+import 'package:taggy/screens/image_detail.dart';
 
 class ImageGrid extends StatefulWidget {
   const ImageGrid(

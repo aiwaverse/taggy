@@ -3,11 +3,11 @@ import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:taggy/constants/app_colors.dart';
-import 'package:taggy/constants/text_styles.dart';
+import 'package:taggy/utils/constants/app_colors.dart';
+import 'package:taggy/utils/constants/text_styles.dart';
 import 'package:taggy/entities/search.dart';
 import 'package:taggy/entities/tag.dart';
-import 'package:taggy/main_screen.dart';
+import 'package:taggy/screens/main_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:taggy/storage.dart';
 
