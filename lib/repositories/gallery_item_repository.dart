@@ -74,8 +74,15 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
   }
 
   @override
-  Future<List<GalleryItem>> getAll() {
-    throw UnimplementedError();
+  Future<List<GalleryItem>> getAll() async {
+    return (await _database
+            .query(table, columns: ["IdImage", "Path", "DateWithId"]))
+        .map((row) => GalleryItem(
+            row["Path"] as String,
+            GalleryItemService.generateDateFromDateWithId(
+                row["DateWithId"] as String),
+            id: row["IdImage"] as int))
+        .toList();
   }
 
   Future<List<GalleryItem>> getWithSearchFirstPage(Search search,

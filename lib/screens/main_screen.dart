@@ -53,6 +53,13 @@ class _MainScreenState extends State<MainScreen> {
     getItemsFirstTime().then((items) => setState(() => galleryItems = items));
   }
 
+  Future<void> refresh() async {
+    var items = await getItemsFirstTime();
+    setState(() {
+      galleryItems = items;
+    });
+  }
+
   Future<void> addFolder(String path) async {
     await storage.directoryRepository.insert(Directory(path));
     var items = await getItemsFirstTime();
@@ -65,7 +72,7 @@ class _MainScreenState extends State<MainScreen> {
     for (var file in files) {
       var f = File(file);
       await storage.galleryItemRepository
-          .insert(GalleryItem(f.path, (await f.stat()).modified));
+          .insert(GalleryItem(f.path, (await f.lastModified())));
     }
     var items = await getItemsFirstTime();
     setState(() {
@@ -160,19 +167,22 @@ class _MainScreenState extends State<MainScreen> {
                               color: AppColors.neutralDarker, size: 24)
                         ],
                       ))),
-          const Padding(padding: EdgeInsets.all(6), child: MainScreenPopup())
+          Padding(
+              padding: const EdgeInsets.all(6), child: MainScreenPopup(refresh))
         ],
       ),
       backgroundColor: AppColors.baseLight,
       body: hasItems
-          ? Provider.value(
-              value: galleryItems,
-              child: ImageGrid(
-                galleryItems: galleryItems,
-                onSearch: widget.searchOptions != null,
-                advancePage: advancePage,
-                goBackPage: goBackPage,
-              ))
+          ? Padding(
+              padding: const EdgeInsets.only(top: 15),
+              child: Provider.value(
+                  value: galleryItems,
+                  child: ImageGrid(
+                    galleryItems: galleryItems,
+                    onSearch: widget.searchOptions != null,
+                    advancePage: advancePage,
+                    goBackPage: goBackPage,
+                  )))
           : Center(
               child: Text(
                 AppLocalizations.of(context)!.addToGalleryMessage,
