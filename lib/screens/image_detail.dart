@@ -1,8 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:taggy/utils/constants/app_colors.dart';
@@ -124,9 +123,8 @@ class _ImageDetailState extends State<ImageDetail> {
                       IconButton(
                           hoverColor: Colors.transparent,
                           splashColor: Colors.transparent,
-                          onPressed: () async {
-                            await OpenFile.open(widget.imageFile.path);
-                          },
+                          onPressed: () async =>
+                              await OpenFilex.open(widget.imageFile.path),
                           tooltip: AppLocalizations.of(context)!.openExternally,
                           icon: const Icon(Icons.open_in_new,
                               color: AppColors.neutralDark))

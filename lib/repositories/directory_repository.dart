@@ -24,7 +24,8 @@ class DirectoryRepository implements IRepository<Directory> {
 
   @override
   Future<Directory> insert(Directory directory) async {
-    var id = await _database.insert(table, {"Path": directory.path});
+    var id = await _database.insert(table, {"Path": directory.path},
+        conflictAlgorithm: ConflictAlgorithm.ignore);
     directory.id = id;
     return directory;
   }

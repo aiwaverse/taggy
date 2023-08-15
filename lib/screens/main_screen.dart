@@ -30,10 +30,24 @@ class _MainScreenState extends State<MainScreen> {
   bool hasItems = false;
   late GalleryStorageSQLite storage;
 
+  Future<void> _permissionsWarning() async {
+    await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+            title: Text(AppLocalizations.of(context)!.permissionsTitle),
+            content: Text(
+              AppLocalizations.of(context)!.imagePermissionsDisclaimer,
+              textAlign: TextAlign.justify,
+            )));
+  }
+
   Future<List<GalleryItem>> getItemsFirstTime() async {
     var directories = await storage.directoryRepository.getAll();
-    await Future.wait(directories.map((dir) =>
-        GalleryItemService.scanForImages(storage.galleryItemRepository, dir)));
+    await Future.wait(directories.map((dir) => GalleryItemService.scanForImages(
+        storage.galleryItemRepository,
+        storage.permissionRepository,
+        dir,
+        _permissionsWarning)));
     hasItems = await storage.galleryItemRepository.hasItems() ||
         await storage.directoryRepository.hasItems();
 
@@ -54,6 +68,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> refresh() async {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text("Scanning folders")));
     var items = await getItemsFirstTime();
     setState(() {
       galleryItems = items;
@@ -62,10 +78,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> addFolder(String path) async {
     await storage.directoryRepository.insert(Directory(path));
-    var items = await getItemsFirstTime();
-    setState(() {
-      galleryItems = items;
-    });
+    await refresh();
   }
 
   void addFiles(List<String> files) async {
@@ -74,10 +87,7 @@ class _MainScreenState extends State<MainScreen> {
       await storage.galleryItemRepository
           .insert(GalleryItem(f.path, (await f.lastModified())));
     }
-    var items = await getItemsFirstTime();
-    setState(() {
-      galleryItems = items;
-    });
+    await refresh();
   }
 
   Future<void> advancePage() async {

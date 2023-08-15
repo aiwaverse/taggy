@@ -43,7 +43,6 @@ dependencies:
   path: ^1.8.3
   intl: any
   permission_handler: ^10.4.3
-  open_file: ^3.3.2
   device_info_plus: ^9.0.2
   share_plus: ^7.0.2
   chips_input: ^0.1.0
@@ -58,6 +57,9 @@ dependencies:
   fixnum: ^1.1.0
   flutter_typeahead: ^4.6.2
   easy_search_bar: ^2.5.0
+  sqlite3_flutter_libs: ^0.5.15
+  open_filex: ^4.3.2
+  sqflite: ^2.3.0
 
 dev_dependencies:
   flutter_test:

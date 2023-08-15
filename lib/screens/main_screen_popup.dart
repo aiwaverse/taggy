@@ -25,7 +25,31 @@ class _MainScreenPopupState extends State<MainScreenPopup> {
       tooltip: AppLocalizations.of(context)!.moreOptions,
       initialValue: selectedScreen,
       offset: const Offset(0, 40),
-      onSelected: (MenuScreen screen) {},
+      onSelected: (MenuScreen screen) {
+        switch (screen) {
+          case MenuScreen.folders:
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ManagementScreen(
+                    title: AppLocalizations.of(context)!.folders,
+                    context.read<GalleryStorageSQLite>().directoryRepository,
+                    widget.refresh)));
+            break;
+          case MenuScreen.images:
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ManagementScreen(
+                    title: AppLocalizations.of(context)!.images,
+                    context.read<GalleryStorageSQLite>().galleryItemRepository,
+                    widget.refresh)));
+            break;
+          case MenuScreen.tags:
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ManagementScreen(
+                    title: AppLocalizations.of(context)!.tags,
+                    context.read<GalleryStorageSQLite>().tagRepository,
+                    widget.refresh)));
+            break;
+        }
+      },
       itemBuilder: ((context) => [
             PopupMenuItem(
               value: MenuScreen.folders,
@@ -44,11 +68,6 @@ class _MainScreenPopupState extends State<MainScreenPopup> {
                   )
                 ],
               ),
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ManagementScreen(
-                      title: AppLocalizations.of(context)!.folders,
-                      context.read<GalleryStorageSQLite>().directoryRepository,
-                      widget.refresh))),
             ),
             PopupMenuItem(
               value: MenuScreen.images,
@@ -67,13 +86,6 @@ class _MainScreenPopupState extends State<MainScreenPopup> {
                   )
                 ],
               ),
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ManagementScreen(
-                      title: AppLocalizations.of(context)!.images,
-                      context
-                          .read<GalleryStorageSQLite>()
-                          .galleryItemRepository,
-                      widget.refresh))),
             ),
             PopupMenuItem(
               value: MenuScreen.tags,
@@ -92,11 +104,6 @@ class _MainScreenPopupState extends State<MainScreenPopup> {
                   )
                 ],
               ),
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ManagementScreen(
-                      title: AppLocalizations.of(context)!.tags,
-                      context.read<GalleryStorageSQLite>().tagRepository,
-                      widget.refresh))),
             ),
           ]),
       child: Container(

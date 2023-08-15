@@ -8,9 +8,12 @@ import 'package:taggy/entities/directory.dart';
 import 'package:taggy/entities/gallery_item.dart';
 import 'package:taggy/repositories/gallery_item_repository.dart';
 
+import '../repositories/permission_repository.dart';
+
 class GalleryItemService {
-  static Future<bool> _getImagePermissions() async {
-    if (Platform.isMacOS || Platform.isLinux) {
+  static Future<bool> _getImagePermissions(Future<void> Function() dialogFunc,
+      PermissionRepository repository) async {
+    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
       return true;
     }
     bool requestPhotos = false;
@@ -21,28 +24,35 @@ class GalleryItemService {
       if (sdk >= 33) {
         requestPhotos = true;
       }
-      await Permission.manageExternalStorage.request();
     }
+    if (!(await repository.getPhotoPermission())) {
+      await dialogFunc();
+      await repository.setPhotoPermissionAsked();
+    }
+
     return requestPhotos
         ? await Permission.photos.request().isGranted
         : await Permission.storage.request().isGranted;
   }
 
   static Future<void> scanForImages(
-      GalleryItemRepository repository, Directory directory) async {
-    if (await _getImagePermissions()) {
-      var lister =
-          io.Directory(directory.path).list(recursive: true, followLinks: true);
-      lister.listen((entity) async {
+      GalleryItemRepository repository,
+      PermissionRepository permissionRepository,
+      Directory directory,
+      Future<void> Function() dialogFunc) async {
+    if (await _getImagePermissions(dialogFunc, permissionRepository)) {
+      var files = io.Directory(directory.path)
+          .listSync(recursive: true, followLinks: true);
+      for (var entity in files) {
         if (entity is io.File) {
           var path = entity.path;
           var mime = lookupMimeType(path)?.split('/').first;
           if (mime == "image") {
-            var item = GalleryItem(path, (await entity.stat()).modified);
-            repository.insertWithDirectory(item, directory.id!);
+            var item = GalleryItem(path, (await entity.lastModified()));
+            await repository.insertWithDirectory(item, directory.id!);
           }
         }
-      });
+      }
     }
   }
 

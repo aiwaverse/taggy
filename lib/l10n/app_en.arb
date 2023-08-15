@@ -25,5 +25,8 @@
   "warningTag": "Removing a tag will remove this tag from all images on the gallery.",
   "warningImage": "Removing an image will force you to re-add any tags if you later wish to add the image to the gallery again.",
   "remove": "Remove",
-  "edit": "Edit"
+  "edit": "Edit",
+  "permissionsTitle" : "Usage of permissions",
+  "imagePermissionsDisclaimer" : "Taggy required image/storage permission to scan the folders for images, if you reject this permission, the import and scan function will not work properly.",
+  "externalStoragePermissionsDisclaimer" : "Taggy will ask for external storage permission because it needs that permission to open images on external storage on external apps, if you reject this permission and have added images from the external storage to Taggy, the button may not work. If you don't use the external storage, you're free to refuse this permission."
 }
