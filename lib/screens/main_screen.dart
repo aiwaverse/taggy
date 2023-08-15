@@ -104,8 +104,8 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> goBackPage() async {
     var items = widget.searchOptions == null
-        ? await storage.galleryItemRepository
-            .getPaginated(galleryItems.first, false, count: 21)
+        ? await storage.galleryItemRepository.getPaginated(
+            galleryItems[galleryItems.length >= 2 ? 1 : 0], false, count: 21)
         : await storage.galleryItemRepository.getWithSearch(
             widget.searchOptions!, galleryItems.first, false,
             count: 21);

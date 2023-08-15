@@ -10,9 +10,10 @@ class DirectoryRepository implements IRepository<Directory> {
 
   @override
   Future<Iterable<Directory>> getAll() async {
-    return (await _database.query(table, columns: ['IdDirectory', 'Path'])).map(
-        (row) =>
-            Directory(row["Path"] as String, id: row["IdDirectory"] as int));
+    return (await _database.query(table, columns: ['IdDirectory', 'Path']))
+        .map((row) =>
+            Directory(row["Path"] as String, id: row["IdDirectory"] as int))
+        .toList();
   }
 
   @override
