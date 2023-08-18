@@ -29,5 +29,6 @@
   "permissionsTitle": "Usage of permissions",
   "imagePermissionsDisclaimer": "Taggy required image/storage permission to scan the folders for images, if you reject this permission, the import and scan function will not work properly.",
   "searching": "Searching...",
-  "updatingGallery": "Updating gallery..."
+  "updatingGallery": "Updating gallery...",
+  "searchResults" : "Search results:"
 }

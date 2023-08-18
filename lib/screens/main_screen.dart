@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:taggy/utils/constants/app_colors.dart';
 import 'package:taggy/utils/constants/text_styles.dart';
@@ -112,6 +113,35 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  String createSearchString(Search search) {
+    var withTagsString = search.withTags.map((e) => e.toString()).join("+");
+    var withoutTagsString =
+        search.withoutTags.map((e) => e.toString()).join("+");
+    var sinceString = search.since != null
+        ? DateFormat.yMMMd(Localizations.localeOf(context).toString())
+            .format(search.since!)
+        : "";
+    var untilString = search.until != null
+        ? DateFormat.yMMMd(Localizations.localeOf(context).toString())
+            .format(search.until!)
+        : "";
+
+    var searchString = "";
+    if (withTagsString.isNotEmpty) {
+      searchString += "($withTagsString)";
+    }
+    if (withoutTagsString.isNotEmpty) {
+      searchString += "-($withoutTagsString)";
+    }
+    if (sinceString.isNotEmpty) {
+      searchString += " ${AppLocalizations.of(context)!.since}$sinceString";
+    }
+    if (untilString.isNotEmpty) {
+      searchString += " ${AppLocalizations.of(context)!.until}$untilString";
+    }
+    return searchString;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,15 +176,13 @@ class _MainScreenState extends State<MainScreen> {
                             child: const Icon(Icons.search,
                                 color: AppColors.neutralDarker, size: 24)))
                     : ElevatedButton(
-                        style: ButtonStyle(
-                            shadowColor:
-                                MaterialStateProperty.all(Colors.transparent),
-                            backgroundColor: MaterialStateProperty.all(
-                                AppColors.primaryPure),
-                            shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(26)))),
+                        style: ElevatedButton.styleFrom(
+                          shadowColor: Colors.transparent,
+                          backgroundColor: AppColors.primaryPure,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50))),
+                        ),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -166,7 +194,7 @@ class _MainScreenState extends State<MainScreen> {
                                         MediaQuery.of(context).size.width *
                                             0.5),
                                 child: Text(
-                                  widget.searchOptions!.toString(),
+                                  createSearchString(widget.searchOptions!),
                                   style: TextStyles.button.copyWith(
                                       color: AppColors.neutralDarker,
                                       overflow: TextOverflow.ellipsis),

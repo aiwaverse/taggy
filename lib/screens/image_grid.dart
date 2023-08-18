@@ -4,6 +4,7 @@ import 'package:taggy/utils/constants/app_colors.dart';
 import 'package:taggy/utils/constants/text_styles.dart';
 import 'package:taggy/entities/gallery_item.dart';
 import 'package:taggy/screens/image_detail.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ImageGrid extends StatefulWidget {
   const ImageGrid(
@@ -43,20 +44,18 @@ class _ImageGridState extends State<ImageGrid> {
     var items = context.watch<List<GalleryItem>>();
     bool canAdvance = items.length > imagesPerPage;
     bool canGoBack = page >= 2;
-
-    //var foundImages = widget.galleryItems.length;
     return Center(
         child: Column(
       children: [
-        // widget.onSearch
-        //     ? Padding(
-        //         padding: const EdgeInsets.all(10),
-        //         child: Text(
-        //           "${AppLocalizations.of(context)!.imagesFound}: $foundImages",
-        //           style: TextStyles.subtitle1
-        //               .copyWith(color: AppColors.neutralDarker),
-        //         ))
-        //     : const SizedBox.shrink(),
+        widget.onSearch
+            ? Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  AppLocalizations.of(context)!.searchResults,
+                  style: TextStyles.subtitle1
+                      .copyWith(color: AppColors.neutralDarker),
+                ))
+            : const SizedBox.shrink(),
         Expanded(
             child: SingleChildScrollView(
                 controller: scrollController,
