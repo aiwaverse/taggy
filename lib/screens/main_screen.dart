@@ -26,8 +26,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  List<GalleryItem> galleryItems = [];
-  bool hasItems = false;
+  List<GalleryItem>? galleryItems;
+  bool hasItems = true;
   late GalleryStorageSQLite storage;
 
   Future<void> _permissionsWarning() async {
@@ -42,16 +42,14 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<List<GalleryItem>> getItemsFirstTime() async {
-    var directories = await storage.directoryRepository.getAll();
-    await Future.wait(directories.map((dir) => GalleryItemService.scanForImages(
-        storage.galleryItemRepository,
-        storage.permissionRepository,
-        dir,
-        _permissionsWarning)));
     hasItems = await storage.galleryItemRepository.hasItems() ||
         await storage.directoryRepository.hasItems();
-
     if (widget.searchOptions == null) {
+      var directories = await storage.directoryRepository.getAll();
+      await Future.wait(directories.map((dir) =>
+          GalleryItemService.scanForImages(storage.galleryItemRepository,
+              storage.permissionRepository, dir, _permissionsWarning)));
+
       return await storage.galleryItemRepository
           .getPaginatedFirstPage(count: 21);
     } else {
@@ -64,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     storage = context.read<GalleryStorageSQLite>();
-    getItemsFirstTime().then((items) => setState(() => galleryItems = items));
+    //getItemsFirstTime().then((items) => setState(() => galleryItems = items));
   }
 
   Future<void> refresh() async {
@@ -92,10 +90,10 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> advancePage() async {
     var items = widget.searchOptions == null
-        ? await storage.galleryItemRepository.getPaginated(
-            galleryItems[galleryItems.length - 2], true, count: 21)
+        ? await storage.galleryItemRepository
+            .getPaginated(galleryItems!.last, true, count: 21)
         : await storage.galleryItemRepository.getWithSearch(
-            widget.searchOptions!, galleryItems[galleryItems.length - 2], true,
+            widget.searchOptions!, galleryItems!.last, true,
             count: 21);
     setState(() {
       galleryItems = items;
@@ -104,10 +102,10 @@ class _MainScreenState extends State<MainScreen> {
 
   Future<void> goBackPage() async {
     var items = widget.searchOptions == null
-        ? await storage.galleryItemRepository.getPaginated(
-            galleryItems[galleryItems.length >= 2 ? 1 : 0], false, count: 21)
+        ? await storage.galleryItemRepository
+            .getPaginated(galleryItems!.first, false, count: 21)
         : await storage.galleryItemRepository.getWithSearch(
-            widget.searchOptions!, galleryItems.first, false,
+            widget.searchOptions!, galleryItems!.first, false,
             count: 21);
     setState(() {
       galleryItems = items;
@@ -117,89 +115,142 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryMedium,
-        foregroundColor: AppColors.neutralDark,
-        leading: ModalRoute.of(context)?.canPop == true
-            ? const BackButton()
-            : Padding(
+        appBar: AppBar(
+          backgroundColor: AppColors.primaryMedium,
+          foregroundColor: AppColors.neutralDark,
+          leading: ModalRoute.of(context)?.canPop == true
+              ? const BackButton()
+              : Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: AddPopup(
+                    addFolder: addFolder,
+                    addImages: addFiles,
+                  )),
+          actions: <Widget>[
+            Padding(
                 padding: const EdgeInsets.all(6),
-                child: AddPopup(
-                  addFolder: addFolder,
-                  addImages: addFiles,
-                )),
-        actions: <Widget>[
-          Padding(
-              padding: const EdgeInsets.all(6),
-              child: widget.searchOptions == null ||
-                      widget.searchOptions.toString().isEmpty
-                  ? Tooltip(
-                      message: AppLocalizations.of(context)!.search,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const SearchScreen()));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shadowColor: Colors.transparent,
-                            backgroundColor: AppColors.primaryPure,
-                            shape: const CircleBorder(),
-                          ),
-                          child: const Icon(Icons.search,
-                              color: AppColors.neutralDarker, size: 24)))
-                  : ElevatedButton(
-                      style: ButtonStyle(
-                          shadowColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          backgroundColor:
-                              MaterialStateProperty.all(AppColors.primaryPure),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(26)))),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Row(
-                        children: [
-                          Container(
-                              constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width * 0.5),
-                              child: Text(
-                                widget.searchOptions!.toString(),
-                                style: TextStyles.button.copyWith(
-                                    color: AppColors.neutralDarker,
-                                    overflow: TextOverflow.ellipsis),
-                              )),
-                          const Icon(Icons.search,
-                              color: AppColors.neutralDarker, size: 24)
-                        ],
-                      ))),
-          Padding(
-              padding: const EdgeInsets.all(6), child: MainScreenPopup(refresh))
-        ],
-      ),
-      backgroundColor: AppColors.baseLight,
-      body: hasItems
-          ? Padding(
-              padding: const EdgeInsets.only(top: 15),
-              child: Provider.value(
-                  value: galleryItems,
-                  child: ImageGrid(
-                    galleryItems: galleryItems,
-                    onSearch: widget.searchOptions != null,
-                    advancePage: advancePage,
-                    goBackPage: goBackPage,
-                  )))
-          : Center(
-              child: Text(
-                AppLocalizations.of(context)!.addToGalleryMessage,
-                style: TextStyles.h1.copyWith(color: AppColors.neutralDarker),
-                textAlign: TextAlign.center,
-              ),
-            ),
-    );
+                child: widget.searchOptions == null ||
+                        widget.searchOptions.toString().isEmpty
+                    ? Tooltip(
+                        message: AppLocalizations.of(context)!.search,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const SearchScreen()));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shadowColor: Colors.transparent,
+                              backgroundColor: AppColors.primaryPure,
+                              shape: const CircleBorder(),
+                            ),
+                            child: const Icon(Icons.search,
+                                color: AppColors.neutralDarker, size: 24)))
+                    : ElevatedButton(
+                        style: ButtonStyle(
+                            shadowColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                            backgroundColor: MaterialStateProperty.all(
+                                AppColors.primaryPure),
+                            shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(26)))),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Row(
+                          children: [
+                            Container(
+                                constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width *
+                                            0.5),
+                                child: Text(
+                                  widget.searchOptions!.toString(),
+                                  style: TextStyles.button.copyWith(
+                                      color: AppColors.neutralDarker,
+                                      overflow: TextOverflow.ellipsis),
+                                )),
+                            const Icon(Icons.search,
+                                color: AppColors.neutralDarker, size: 24)
+                          ],
+                        ))),
+            Padding(
+                padding: const EdgeInsets.all(6),
+                child: MainScreenPopup(refresh))
+          ],
+        ),
+        backgroundColor: AppColors.baseLight,
+        body: galleryItems != null
+            ? Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Provider.value(
+                    value: galleryItems,
+                    child: ImageGrid(
+                      galleryItems: galleryItems!,
+                      onSearch: widget.searchOptions != null,
+                      advancePage: advancePage,
+                      goBackPage: goBackPage,
+                    )))
+            : FutureBuilder<List<GalleryItem>>(
+                future: getItemsFirstTime(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      setState(() {
+                        galleryItems = snapshot.data!;
+                      });
+                    });
+                    return const SizedBox.shrink();
+                  } else if (widget.searchOptions != null) {
+                    return Center(
+                      child: Text(
+                        AppLocalizations.of(context)!.searching,
+                        style: TextStyles.h1
+                            .copyWith(color: AppColors.neutralDarker),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  } else if (!hasItems) {
+                    return Center(
+                      child: Text(
+                        AppLocalizations.of(context)!.addToGalleryMessage,
+                        style: TextStyles.h1
+                            .copyWith(color: AppColors.neutralDarker),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                        AppLocalizations.of(context)!.updatingGallery,
+                        style: TextStyles.h1
+                            .copyWith(color: AppColors.neutralDarker),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }
+                },
+              )
+
+        // hasItems
+        //     ? Padding(
+        //         padding: const EdgeInsets.only(top: 15),
+        //         child: Provider.value(
+        //             value: galleryItems,
+        //             child: ImageGrid(
+        //               galleryItems: galleryItems,
+        //               onSearch: widget.searchOptions != null,
+        //               advancePage: advancePage,
+        //               goBackPage: goBackPage,
+        //             )))
+        //     : Center(
+        //         child: Text(
+        //           AppLocalizations.of(context)!.addToGalleryMessage,
+        //           style: TextStyles.h1.copyWith(color: AppColors.neutralDarker),
+        //           textAlign: TextAlign.center,
+        //         ),
+        //       ),
+        );
   }
 }

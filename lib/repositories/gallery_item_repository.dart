@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:quiver/strings.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:taggy/utils/extensions.dart';
@@ -47,8 +49,9 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
            , Image.Path
            , Image.DateWithId
         FROM Image''';
-    query +=
-        forward ? " WHERE Image.DateWithId < ?" : " WHERE Image.DateWithId > ?";
+    query += forward
+        ? " WHERE Image.DateWithId <= ?"
+        : " WHERE Image.DateWithId >= ?";
     query += " ORDER BY Image.DateWithId DESC LIMIT ?";
     var images = (await _database.rawQuery(query, [
       GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!),
@@ -111,13 +114,13 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
     }
     if (search.since != null) {
       var dateQueryVal =
-          query += GalleryItemService.generateDateWithId(search.since!, 0);
-      " AND Image.DateWithId >= $dateQueryVal";
+          GalleryItemService.generateDateWithId(search.since!, 0);
+      query += " AND Image.DateWithId >= '$dateQueryVal'";
     }
     if (search.until != null) {
-      var dateQueryVal = query += GalleryItemService.generateDateWithId(
-          search.until!.add(const Duration(milliseconds: 1)), 0);
-      query += " AND Image.DateWithId <= $dateQueryVal";
+      var dateQueryVal =
+          GalleryItemService.generateDateWithId(search.until!, 0);
+      query += " AND Image.DateWithId <= '$dateQueryVal'";
     }
     query += " ORDER BY Image.DateWithId DESC LIMIT $count";
 
@@ -149,10 +152,10 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
            , Image.DateWithId
         FROM Image''';
     query += forward
-        ? "WHERE Image.DateWithId < ${GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!)}"
-        : "WHERE Image.DateWithId > ${GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!)}";
+        ? " WHERE Image.DateWithId <= ${GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!)}"
+        : " WHERE Image.DateWithId >= ${GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!)}";
     if (search.withTags.isNotEmpty) {
-      query += '''AND Image.IdImage IN (
+      query += ''' AND Image.IdImage IN (
         SELECT ImageTag.IdImage
           FROM ImageTag
          WHERE ImageTag.IdTag IN (${search.withTags.join(", ")})
@@ -161,7 +164,7 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
       )''';
     }
     if (search.withoutTags.isNotEmpty) {
-      query += '''AND Image.IdImage NOT IN (
+      query += ''' AND Image.IdImage NOT IN (
         SELECT ImageTag.IdImage
           FROM ImageTag
          WHERE ImageTag.IdTag IN (${search.withoutTags.join(", ")})
@@ -170,15 +173,15 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
     }
     if (search.since != null) {
       var dateQueryVal =
-          query += GalleryItemService.generateDateWithId(search.since!, 0);
-      "AND Image.DateWithId >= $dateQueryVal";
+          GalleryItemService.generateDateWithId(search.since!, 0);
+      query += " AND Image.DateWithId >= '$dateQueryVal'";
     }
     if (search.until != null) {
-      var dateQueryVal = query += GalleryItemService.generateDateWithId(
-          search.until!.add(const Duration(milliseconds: 1)), 0);
-      query += "AND Image.DateWithId <= $dateQueryVal";
+      var dateQueryVal =
+          GalleryItemService.generateDateWithId(search.until!, 0);
+      query += " AND Image.DateWithId <= '$dateQueryVal'";
     }
-    query += "ORDER BY Image.DateWithId DESC LIMIT $count";
+    query += " ORDER BY Image.DateWithId DESC LIMIT $count";
 
     var images = (await _database.rawQuery(query))
         .map((row) => GalleryItem(

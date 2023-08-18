@@ -189,7 +189,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: DateTimeField(
                       controller: dateSinceTextController,
                       onChanged: (value) {
-                        since = value;
+                        if (value != null) {
+                          since = DateUtils.dateOnly(value);
+                        } else {
+                          since = value;
+                        }
                       },
                       resetIcon: null,
                       textAlign: TextAlign.start,
@@ -250,7 +254,12 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: DateTimeField(
                       controller: dateUntilTextController,
                       onChanged: (value) {
-                        until = value;
+                        if (value != null) {
+                          until = DateUtils.dateOnly(value)
+                              .add(const Duration(days: 1, milliseconds: -1));
+                        } else {
+                          until = value;
+                        }
                       },
                       resetIcon: null,
                       textAlign: TextAlign.start,

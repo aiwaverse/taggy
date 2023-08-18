@@ -26,7 +26,8 @@
   "warningImage": "Remover uma imagem ira forçar você a ter de adicionar quaisquer tags novamente se mais tarde você quiser adicionar essa imagem à sua galeria novamente.",
   "remove": "Remover",
   "edit": "Alterar",
-  "permissionsTitle" : "Uso de permissões",
-  "imagePermissionsDisclaimer" : "Taggy precisa de permissões de armazenamento/fotos para scanear as pastas por imagens, se você rejeitar essa permissão, a função de importar e scanear pode não funcionar corretamente.",
-  "externalStoragePermissionsDisclaimer" : "Taggy irá pedir por permissões de armazenamento externo porque precisa dessa permissão para abrir imagens do armazenamento externo em aplicativos externos, se você rejeitar essa permissão e adicionou images de armazenamentos externos no Taggy, o botão pode não funcionar. Se você não usa armazenamento externo para as imagens da galeira, sinta-se livre para recusar a permissão."
+  "permissionsTitle": "Uso de permissões",
+  "imagePermissionsDisclaimer": "Taggy precisa de permissões de armazenamento/fotos para scanear as pastas por imagens, se você rejeitar essa permissão, a função de importar e scanear pode não funcionar corretamente.",
+  "searching": "Buscando...",
+  "updatingGallery": "Atualizando galeria..."
 }
