@@ -52,7 +52,9 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
     query += forward
         ? " WHERE Image.DateWithId <= ?"
         : " WHERE Image.DateWithId >= ?";
-    query += " ORDER BY Image.DateWithId DESC LIMIT ?";
+    query += forward
+        ? " ORDER BY Image.DateWithId DESC LIMIT ?"
+        : " ORDER BY Image.DateWithId ASC LIMIT ?";
     var images = (await _database.rawQuery(query, [
       GalleryItemService.generateDateWithId(lastItem.date, lastItem.id!),
       count
@@ -63,7 +65,10 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
                 row["DateWithId"] as String),
             id: row["IdImage"] as int))
         .toList();
-
+    // Little bit of a hack
+    if (!forward) {
+      images = images.reversed.toList();
+    }
     var tags = await GalleryItemTagRepository(_database)
         .getTagsFromImages(images.map((e) => e.id!).toList());
 
@@ -181,7 +186,9 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
           GalleryItemService.generateDateWithId(search.until!, 0);
       query += " AND Image.DateWithId <= '$dateQueryVal'";
     }
-    query += " ORDER BY Image.DateWithId DESC LIMIT $count";
+    query += forward
+        ? " ORDER BY Image.DateWithId DESC LIMIT $count"
+        : " ORDER BY Image.DateWithId ASC LIMIT $count";
 
     var images = (await _database.rawQuery(query))
         .map((row) => GalleryItem(
@@ -190,6 +197,10 @@ class GalleryItemRepository implements IRepository<GalleryItem> {
                 row["DateWithId"] as String),
             id: row["IdImage"] as int))
         .toList();
+
+    if (!forward) {
+      images = images.reversed.toList();
+    }
 
     var tags = await GalleryItemTagRepository(_database)
         .getTagsFromImages(images.map((e) => e.id!).toList());
