@@ -212,14 +212,23 @@ class _MainScreenState extends State<MainScreen> {
         body: galleryItems != null
             ? Padding(
                 padding: const EdgeInsets.only(top: 15),
-                child: Provider.value(
-                    value: galleryItems,
-                    child: ImageGrid(
-                      galleryItems: galleryItems!,
-                      onSearch: widget.searchOptions != null,
-                      advancePage: advancePage,
-                      goBackPage: goBackPage,
-                    )))
+                child: hasItems
+                    ? Provider.value(
+                        value: galleryItems,
+                        child: ImageGrid(
+                          galleryItems: galleryItems!,
+                          onSearch: widget.searchOptions != null,
+                          advancePage: advancePage,
+                          goBackPage: goBackPage,
+                        ))
+                    : Center(
+                        child: Text(
+                          AppLocalizations.of(context)!.addToGalleryMessage,
+                          style: TextStyles.h1
+                              .copyWith(color: AppColors.neutralDarker),
+                          textAlign: TextAlign.center,
+                        ),
+                      ))
             : FutureBuilder<List<GalleryItem>>(
                 future: getItemsFirstTime(),
                 builder: (context, snapshot) {
