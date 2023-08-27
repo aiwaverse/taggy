@@ -20,6 +20,10 @@ class Taggy extends StatelessWidget {
             return Provider.value(
                 value: snapshot.data!,
                 child: MaterialApp(
+                    builder: ((context, child) => MediaQuery(
+                        data: MediaQuery.of(context)
+                            .copyWith(accessibleNavigation: false),
+                        child: child!)),
                     title: 'Taggy',
                     debugShowCheckedModeBanner: false,
                     scrollBehavior: MyCustomScrollBehavior(),

@@ -155,50 +155,54 @@ class _ImageDetailState extends State<ImageDetail> {
                                     title: Text(
                                         AppLocalizations.of(context)!.addTag),
                                     content: TypeAheadField(
-                                      hideOnEmpty: true,
-                                      hideOnLoading: true,
-                                      textFieldConfiguration:
-                                          TextFieldConfiguration(
-                                              onChanged: (value) =>
-                                                  content = value,
-                                              onSubmitted: (value) {
-                                                if (value.isNotEmpty) {
-                                                  addTag(value).whenComplete(
-                                                      () => Navigator.pop(
-                                                          context));
-                                                }
-                                              },
-                                              textInputAction:
-                                                  TextInputAction.done,
-                                              controller:
-                                                  _textEditingController),
-                                      suggestionsCallback: (pattern) =>
-                                          _allTags.where((element) {
-                                        var descriptionLowerCase =
-                                            element.description.toLowerCase();
-                                        var patternLowerCase =
-                                            pattern.toLowerCase();
-                                        return !widget.imageFile.tags
-                                                .contains(element) &&
-                                            patternLowerCase !=
-                                                descriptionLowerCase &&
-                                            descriptionLowerCase.startsWith(
-                                                pattern.toLowerCase());
-                                      }),
-                                      itemBuilder: (context, itemData) =>
-                                          Padding(
-                                              padding: const EdgeInsets.all(10),
-                                              child: Text(
-                                                itemData.description,
-                                                style: TextStyles.h5.copyWith(
-                                                    color: AppColors
-                                                        .neutralDarker),
-                                              )),
-                                      onSuggestionSelected: (suggestion) =>
+                                        hideOnEmpty: true,
+                                        hideOnLoading: true,
+                                        textFieldConfiguration:
+                                            TextFieldConfiguration(
+                                                onChanged: (value) =>
+                                                    content = value,
+                                                onSubmitted: (value) {
+                                                  if (value.isNotEmpty) {
+                                                    addTag(value).whenComplete(
+                                                        () => Navigator.pop(
+                                                            context));
+                                                  }
+                                                },
+                                                textInputAction:
+                                                    TextInputAction.done,
+                                                controller:
+                                                    _textEditingController),
+                                        suggestionsCallback: (pattern) =>
+                                            _allTags.where((element) {
+                                              var descriptionLowerCase = element
+                                                  .description
+                                                  .toLowerCase();
+                                              var patternLowerCase =
+                                                  pattern.toLowerCase();
+                                              return !widget.imageFile.tags
+                                                      .contains(element) &&
+                                                  patternLowerCase !=
+                                                      descriptionLowerCase &&
+                                                  descriptionLowerCase
+                                                      .startsWith(pattern
+                                                          .toLowerCase());
+                                            }),
+                                        itemBuilder: (context, itemData) =>
+                                            Padding(
+                                                padding:
+                                                    const EdgeInsets.all(10),
+                                                child: Text(
+                                                  itemData.description,
+                                                  style: TextStyles.h5.copyWith(
+                                                      color: AppColors
+                                                          .neutralDarker),
+                                                )),
+                                        onSuggestionSelected: (suggestion) {
                                           _textEditingController.value =
                                               TextEditingValue(
-                                                  text: suggestion.description),
-                                    ),
+                                                  text: suggestion.description);
+                                          content = suggestion.description;
+                                        }),
                                     actions: [
                                       OutlinedButton(
                                           onPressed: () =>
