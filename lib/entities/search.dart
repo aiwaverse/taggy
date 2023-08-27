@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:taggy/entities/tag.dart';
 
 class Search {

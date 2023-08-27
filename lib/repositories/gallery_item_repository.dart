@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:quiver/strings.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:taggy/utils/extensions.dart';
